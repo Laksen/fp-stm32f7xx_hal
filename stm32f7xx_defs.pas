@@ -16,6 +16,9 @@ interface
 {$endif ControllerDefined}
 
 procedure __DSB;
+procedure __WFI;
+procedure __WFE;
+procedure __SEV;
 
 implementation
 
@@ -23,6 +26,27 @@ procedure __DSB;
 begin
   asm
     dsb
+  end;
+end;
+
+procedure __WFI;
+begin
+  asm
+    wfi
+  end;
+end;
+
+procedure __WFE;
+begin
+  asm
+    wfe
+  end;
+end;
+
+procedure __SEV;
+begin
+  asm
+    sev
   end;
 end;
 

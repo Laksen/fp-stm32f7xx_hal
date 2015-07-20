@@ -68,8 +68,6 @@ type
   HAL_StatusTypeDef = (HAL_OK,
                        HAL_ERROR,HAL_TIMEOUT,HAL_BUSY);
 
-  TState = (RESET,ENABLED);
-
   HAL_LockTypeDef = longint;
 
 const
@@ -77,6 +75,8 @@ const
 
   HAL_UNLOCKED = 0;
   HAL_LOCKED = 1;
+
+procedure HAL_MspInit; external name 'HAL_MspInit';
 
 procedure __HAL_LOCK(var Lock: HAL_LockTypeDef);
 procedure __HAL_UNLOCK(var Lock: HAL_LockTypeDef);
@@ -96,6 +96,7 @@ var
 implementation
 
 uses
+  stm32f7xx_defs,
   stm32f7xx_hal_conf, stm32f7xx_hal_flash, stm32f7xx_hal_rcc, stm32f7xx_hal_cortex;
 
 function HAL_IS_BIT_SET(REG, BIT: longword): boolean; begin exit(((REG) and (BIT)) <> 0); end;
@@ -104,8 +105,9 @@ function HAL_IS_BIT_CLR(REG, BIT: longword): boolean; begin exit(((REG) and (BIT
 var
   uwTick: longword;
 
-procedure HAL_MspInit;
-  begin
+procedure HAL_MspInit_stub; assembler; nostackframe; public name 'HAL_MspInit';
+  asm
+    .weak HAL_MspInit
   end;
 
 procedure __HAL_LOCK(var Lock: HAL_LockTypeDef);
