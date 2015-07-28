@@ -46,7 +46,9 @@ unit stm32f7xx_hal_adc_ex;
 interface
 
 uses
-  stm32f7xx_hal_adc, stm32f7xx_defs;
+  stm32f7xx_hal,
+  stm32f7xx_hal_adc,
+  stm32f7xx_defs;
 
 (**
   * @brief   ADC Configuration injected Channel structure definition
@@ -103,19 +105,19 @@ type
    *)
 
 const
-  ADC_MODE_INDEPENDENT       = ($00000000);
+  ADC_MODE_INDEPENDENT = ($00000000);
   ADC_DUALMODE_REGSIMULT_INJECSIMULT = (ADC_CCR_MULTI_0);
   ADC_DUALMODE_REGSIMULT_ALTERTRIG = (ADC_CCR_MULTI_1);
-  ADC_DUALMODE_INJECSIMULT   = ((ADC_CCR_MULTI_2 or ADC_CCR_MULTI_0));
-  ADC_DUALMODE_REGSIMULT     = ((ADC_CCR_MULTI_2 or ADC_CCR_MULTI_1));
-  ADC_DUALMODE_INTERL        = ((ADC_CCR_MULTI_2 or ADC_CCR_MULTI_1 or ADC_CCR_MULTI_0));
-  ADC_DUALMODE_ALTERTRIG     = ((ADC_CCR_MULTI_3 or ADC_CCR_MULTI_0));
+  ADC_DUALMODE_INJECSIMULT = ((ADC_CCR_MULTI_2 or ADC_CCR_MULTI_0));
+  ADC_DUALMODE_REGSIMULT = ((ADC_CCR_MULTI_2 or ADC_CCR_MULTI_1));
+  ADC_DUALMODE_INTERL = ((ADC_CCR_MULTI_2 or ADC_CCR_MULTI_1 or ADC_CCR_MULTI_0));
+  ADC_DUALMODE_ALTERTRIG = ((ADC_CCR_MULTI_3 or ADC_CCR_MULTI_0));
   ADC_TRIPLEMODE_REGSIMULT_INJECSIMULT = ((ADC_CCR_MULTI_4 or ADC_CCR_MULTI_0));
   ADC_TRIPLEMODE_REGSIMULT_AlterTrig = ((ADC_CCR_MULTI_4 or ADC_CCR_MULTI_1));
   ADC_TRIPLEMODE_INJECSIMULT = ((ADC_CCR_MULTI_4 or ADC_CCR_MULTI_2 or ADC_CCR_MULTI_0));
-  ADC_TRIPLEMODE_REGSIMULT   = ((ADC_CCR_MULTI_4 or ADC_CCR_MULTI_2 or ADC_CCR_MULTI_1));
-  ADC_TRIPLEMODE_INTERL      = ((ADC_CCR_MULTI_4 or ADC_CCR_MULTI_2 or ADC_CCR_MULTI_1 or ADC_CCR_MULTI_0));
-  ADC_TRIPLEMODE_ALTERTRIG   = ((ADC_CCR_MULTI_4 or ADC_CCR_MULTI_3 or ADC_CCR_MULTI_0));
+  ADC_TRIPLEMODE_REGSIMULT = ((ADC_CCR_MULTI_4 or ADC_CCR_MULTI_2 or ADC_CCR_MULTI_1));
+  ADC_TRIPLEMODE_INTERL = ((ADC_CCR_MULTI_4 or ADC_CCR_MULTI_2 or ADC_CCR_MULTI_1 or ADC_CCR_MULTI_0));
+  ADC_TRIPLEMODE_ALTERTRIG = ((ADC_CCR_MULTI_4 or ADC_CCR_MULTI_3 or ADC_CCR_MULTI_0));
   (**
   * @}
    *)
@@ -125,9 +127,9 @@ const
    *)
 
   ADC_DMAACCESSMODE_DISABLED = ($00000000);  (*!< DMA mode disabled  *)
-  ADC_DMAACCESSMODE_1        = (ADC_CCR_DMA_0);  (*!< DMA mode 1 enabled (2 / 3 half-words one by one - 1 then 2 then 3) *)
-  ADC_DMAACCESSMODE_2        = (ADC_CCR_DMA_1);  (*!< DMA mode 2 enabled (2 / 3 half-words by pairs - 2&1 then 1&3 then 3&2) *)
-  ADC_DMAACCESSMODE_3        = (ADC_CCR_DMA);  (*!< DMA mode 3 enabled (2 / 3 bytes by pairs - 2&1 then 1&3 then 3&2)  *)
+  ADC_DMAACCESSMODE_1 = (ADC_CCR_DMA_0);  (*!< DMA mode 1 enabled (2 / 3 half-words one by one - 1 then 2 then 3) *)
+  ADC_DMAACCESSMODE_2 = (ADC_CCR_DMA_1);  (*!< DMA mode 2 enabled (2 / 3 half-words by pairs - 2&1 then 1&3 then 3&2) *)
+  ADC_DMAACCESSMODE_3 = (ADC_CCR_DMA);  (*!< DMA mode 3 enabled (2 / 3 bytes by pairs - 2&1 then 1&3 then 3&2)  *)
   (**
   * @}
    *)
@@ -136,8 +138,8 @@ const
   * @{
    *)
 
-  ADC_EXTERNALTRIGINJECCONVEDGE_NONE    = ($00000000);
-  ADC_EXTERNALTRIGINJECCONVEDGE_RISING  = (ADC_CR2_JEXTEN_0);
+  ADC_EXTERNALTRIGINJECCONVEDGE_NONE = ($00000000);
+  ADC_EXTERNALTRIGINJECCONVEDGE_RISING = (ADC_CR2_JEXTEN_0);
   ADC_EXTERNALTRIGINJECCONVEDGE_FALLING = (ADC_CR2_JEXTEN_1);
   ADC_EXTERNALTRIGINJECCONVEDGE_RISINGFALLING = (ADC_CR2_JEXTEN);
   (**
@@ -148,20 +150,20 @@ const
   * @{
    *)
 
-  ADC_EXTERNALTRIGINJECCONV_T1_TRGO  = ($00000000);
-  ADC_EXTERNALTRIGINJECCONV_T1_CC4   = (ADC_CR2_JEXTSEL_0);
-  ADC_EXTERNALTRIGINJECCONV_T2_TRGO  = (ADC_CR2_JEXTSEL_1);
-  ADC_EXTERNALTRIGINJECCONV_T2_CC1   = ((ADC_CR2_JEXTSEL_1 or ADC_CR2_JEXTSEL_0));
-  ADC_EXTERNALTRIGINJECCONV_T3_CC4   = (ADC_CR2_JEXTSEL_2);
-  ADC_EXTERNALTRIGINJECCONV_T4_TRGO  = ((ADC_CR2_JEXTSEL_2 or ADC_CR2_JEXTSEL_0));
-  ADC_EXTERNALTRIGINJECCONV_T8_CC4   = ((ADC_CR2_JEXTSEL_2 or ADC_CR2_JEXTSEL_1 or ADC_CR2_JEXTSEL_0));
+  ADC_EXTERNALTRIGINJECCONV_T1_TRGO = ($00000000);
+  ADC_EXTERNALTRIGINJECCONV_T1_CC4 = (ADC_CR2_JEXTSEL_0);
+  ADC_EXTERNALTRIGINJECCONV_T2_TRGO = (ADC_CR2_JEXTSEL_1);
+  ADC_EXTERNALTRIGINJECCONV_T2_CC1 = ((ADC_CR2_JEXTSEL_1 or ADC_CR2_JEXTSEL_0));
+  ADC_EXTERNALTRIGINJECCONV_T3_CC4 = (ADC_CR2_JEXTSEL_2);
+  ADC_EXTERNALTRIGINJECCONV_T4_TRGO = ((ADC_CR2_JEXTSEL_2 or ADC_CR2_JEXTSEL_0));
+  ADC_EXTERNALTRIGINJECCONV_T8_CC4 = ((ADC_CR2_JEXTSEL_2 or ADC_CR2_JEXTSEL_1 or ADC_CR2_JEXTSEL_0));
   ADC_EXTERNALTRIGINJECCONV_T1_TRGO2 = (ADC_CR2_JEXTSEL_3);
-  ADC_EXTERNALTRIGINJECCONV_T8_TRGO  = ((ADC_CR2_JEXTSEL_3 or ADC_CR2_JEXTSEL_0));
+  ADC_EXTERNALTRIGINJECCONV_T8_TRGO = ((ADC_CR2_JEXTSEL_3 or ADC_CR2_JEXTSEL_0));
   ADC_EXTERNALTRIGINJECCONV_T8_TRGO2 = ((ADC_CR2_JEXTSEL_3 or ADC_CR2_JEXTSEL_1));
-  ADC_EXTERNALTRIGINJECCONV_T3_CC3   = ((ADC_CR2_JEXTSEL_3 or ADC_CR2_JEXTSEL_1 or ADC_CR2_JEXTSEL_0));
-  ADC_EXTERNALTRIGINJECCONV_T5_TRGO  = ((ADC_CR2_JEXTSEL_3 or ADC_CR2_JEXTSEL_2));
-  ADC_EXTERNALTRIGINJECCONV_T3_CC1   = ((ADC_CR2_JEXTSEL_3 or ADC_CR2_JEXTSEL_2 or ADC_CR2_JEXTSEL_0));
-  ADC_EXTERNALTRIGINJECCONV_T6_TRGO  = ((ADC_CR2_JEXTSEL_3 or ADC_CR2_JEXTSEL_2 or ADC_CR2_JEXTSEL_1));
+  ADC_EXTERNALTRIGINJECCONV_T3_CC3 = ((ADC_CR2_JEXTSEL_3 or ADC_CR2_JEXTSEL_1 or ADC_CR2_JEXTSEL_0));
+  ADC_EXTERNALTRIGINJECCONV_T5_TRGO = ((ADC_CR2_JEXTSEL_3 or ADC_CR2_JEXTSEL_2));
+  ADC_EXTERNALTRIGINJECCONV_T3_CC1 = ((ADC_CR2_JEXTSEL_3 or ADC_CR2_JEXTSEL_2 or ADC_CR2_JEXTSEL_0));
+  ADC_EXTERNALTRIGINJECCONV_T6_TRGO = ((ADC_CR2_JEXTSEL_3 or ADC_CR2_JEXTSEL_2 or ADC_CR2_JEXTSEL_1));
   (**
   * @}
    *)
@@ -184,9 +186,547 @@ const
 
   ADC_CHANNEL_TEMPSENSOR = (ADC_CHANNEL_16);
 
+(* I/O operation functions ***************************************************** *)
+function HAL_ADCEx_InjectedStart(var hadc: ADC_HandleTypeDef): HAL_StatusTypeDef;
+function HAL_ADCEx_InjectedStop(var hadc: ADC_HandleTypeDef): HAL_StatusTypeDef;
+function HAL_ADCEx_InjectedPollForConversion(var hadc: ADC_HandleTypeDef; Timeout: longword): HAL_StatusTypeDef;
+function HAL_ADCEx_InjectedStart_IT(var hadc: ADC_HandleTypeDef): HAL_StatusTypeDef;
+function HAL_ADCEx_InjectedStop_IT(var hadc: ADC_HandleTypeDef): HAL_StatusTypeDef;
+function HAL_ADCEx_InjectedGetValue(var hadc: ADC_HandleTypeDef; InjectedRank: longword): longword;
+function HAL_ADCEx_MultiModeStart_DMA(var hadc: ADC_HandleTypeDef; pData: Plongword; Length: longword): HAL_StatusTypeDef;
+function HAL_ADCEx_MultiModeStop_DMA(var hadc: ADC_HandleTypeDef): HAL_StatusTypeDef;
+function HAL_ADCEx_MultiModeGetValue(var hadc: ADC_HandleTypeDef): longword;
 procedure HAL_ADCEx_InjectedConvCpltCallback(var hadc: ADC_HandleTypeDef); external name 'HAL_ADCEx_InjectedConvCpltCallback';
 
+(* Peripheral Control functions ************************************************ *)
+function HAL_ADCEx_InjectedConfigChannel(var hadc: ADC_HandleTypeDef; var sConfigInjected: ADC_InjectionConfTypeDef): HAL_StatusTypeDef;
+function HAL_ADCEx_MultiModeConfigChannel(var hadc: ADC_HandleTypeDef; var multimode: ADC_MultiModeTypeDef): HAL_StatusTypeDef;
+
+function ADC_JSQR(_CHANNELNB_, _RANKNB_, _JSQR_JL_: longword): longword;
+
 implementation
+
+uses
+  stm32f7xx_hal_dma;
+
+procedure ADC_MultiModeDMAConvCplt(var hdma: DMA_HandleTypeDef);
+var
+  hadc: PADC_HandleTypeDef;
+begin
+  hadc := PADC_HandleTypeDef(hdma.Parent);
+  (* Check if an injected conversion is ready *)
+  if (hadc^.State = HAL_ADC_STATE_EOC_INJ) then
+  begin
+    (* Change ADC state *)
+    hadc^.State := HAL_ADC_STATE_EOC_INJ_REG;
+  end
+  else
+  begin
+    (* Change ADC state *)
+    hadc^.State := HAL_ADC_STATE_EOC_REG;
+  end;
+
+  HAL_ADC_ConvCpltCallback(hadc^);
+end;
+
+procedure ADC_MultiModeDMAError(var hdma: DMA_HandleTypeDef);
+var
+  hadc: PADC_HandleTypeDef;
+begin
+  hadc := PADC_HandleTypeDef(hdma.Parent);
+  (* Conversion complete callback *)
+  HAL_ADC_ConvHalfCpltCallback(hadc^);
+end;
+
+procedure ADC_MultiModeDMAHalfConvCplt(var hdma: DMA_HandleTypeDef);
+var
+  hadc: PADC_HandleTypeDef;
+begin
+  hadc := PADC_HandleTypeDef(hdma.Parent);
+
+  hadc^.State := HAL_ADC_STATE_ERROR;
+  (* Set ADC error code to DMA error *)
+  hadc^.ErrorCode := hadc^.ErrorCode or HAL_ADC_ERROR_DMA;
+  HAL_ADC_ErrorCallback(hadc^);
+end;
+
+function HAL_ADCEx_InjectedStart(var hadc: ADC_HandleTypeDef): HAL_StatusTypeDef;
+var
+  counter: longword;
+  tmp1, tmp2: boolean;
+begin
+  counter := 0;
+
+  (* Process locked *)
+  __HAL_Lock(hadc.lock);
+
+  (* Check if a regular conversion is ongoing *)
+  if (hadc.State = HAL_ADC_STATE_BUSY_REG) then
+  begin
+    (* Change ADC state *)
+    hadc.State := HAL_ADC_STATE_BUSY_INJ_REG;
+  end
+  else
+  begin
+    (* Change ADC state *)
+    hadc.State := HAL_ADC_STATE_BUSY_INJ;
+  end;
+
+  (* Check if ADC peripheral is disabled in order to enable it and wait during
+     Tstab time the ADC's stabilization *)
+  if ((hadc.Instance^.CR2 and ADC_CR2_ADON) <> ADC_CR2_ADON) then
+  begin
+    (* Enable the Peripheral *)
+    __HAL_ADC_ENABLE(hadc);
+
+    (* Delay for temperature sensor stabilization time *)
+    (* Compute number of CPU cycles to wait for *)
+    counter := (ADC_STAB_DELAY_US * (SystemCoreClock div 1000000));
+    while (counter <> 0) do
+    begin
+      Dec(counter);
+    end;
+  end;
+
+  (* Check if Multimode enabled *)
+  if (HAL_IS_BIT_CLR(C_ADC.CCR, ADC_CCR_MULTI)) then
+  begin
+    tmp1 := HAL_IS_BIT_CLR(hadc.Instance^.CR2, ADC_CR2_JEXTEN);
+    tmp2 := HAL_IS_BIT_CLR(hadc.Instance^.CR1, ADC_CR1_JAUTO);
+    if (tmp1 and tmp2) then
+    begin
+      (* Enable the selected ADC software conversion for injected group *)
+      hadc.Instance^.CR2 := hadc.Instance^.CR2 or ADC_CR2_JSWSTART;
+    end;
+  end
+  else
+  begin
+    tmp1 := HAL_IS_BIT_CLR(hadc.Instance^.CR2, ADC_CR2_JEXTEN);
+    tmp2 := HAL_IS_BIT_CLR(hadc.Instance^.CR1, ADC_CR1_JAUTO);
+    if ((hadc.Instance = @ADC1) and tmp1 and tmp2) then
+    begin
+      (* Enable the selected ADC software conversion for injected group *)
+      hadc.Instance^.CR2 := hadc.Instance^.CR2 or ADC_CR2_JSWSTART;
+    end;
+  end;
+
+  (* Process unlocked *)
+  __HAL_Unlock(hadc.lock);
+
+  (* Return function status *)
+  exit(HAL_OK);
+
+end;
+
+function HAL_ADCEx_InjectedStop(var hadc: ADC_HandleTypeDef): HAL_StatusTypeDef;
+begin
+  (* Disable the Peripheral *)
+  __HAL_ADC_DISABLE(hadc);
+
+  (* Change ADC state *)
+  hadc.State := HAL_ADC_STATE_READY;
+
+  (* Return function status *)
+  exit(HAL_OK);
+end;
+
+function HAL_ADCEx_InjectedPollForConversion(var hadc: ADC_HandleTypeDef; Timeout: longword): HAL_StatusTypeDef;
+var
+  tickstart: longword;
+begin
+  (* Get tick *)
+  tickstart := HAL_GetTick();
+
+  (* Check End of conversion flag *)
+  while (not (__HAL_ADC_GET_FLAG(hadc, ADC_FLAG_JEOC))) do
+  begin
+    (* Check for the Timeout *)
+    if (Timeout <> HAL_MAX_DELAY) then
+    begin
+      if ((Timeout = 0) or ((HAL_GetTick() - tickstart) > Timeout)) then
+      begin
+        hadc.State := HAL_ADC_STATE_TIMEOUT;
+        (* Process unlocked *)
+        __HAL_Unlock(hadc.lock);
+        exit(HAL_TIMEOUT);
+      end;
+    end;
+  end;
+
+  (* Check if a regular conversion is ready *)
+  if (hadc.State = HAL_ADC_STATE_EOC_REG) then
+  begin
+    (* Change ADC state *)
+    hadc.State := HAL_ADC_STATE_EOC_INJ_REG;
+  end
+  else
+  begin
+    (* Change ADC state *)
+    hadc.State := HAL_ADC_STATE_EOC_INJ;
+  end;
+
+  (* Return ADC state *)
+  exit(HAL_OK);
+
+end;
+
+function HAL_ADCEx_InjectedStart_IT(var hadc: ADC_HandleTypeDef): HAL_StatusTypeDef;
+var
+  counter: longword;
+  tmp1, tmp2: boolean;
+begin
+  counter := 0;
+
+  (* Process locked *)
+  __HAL_Lock(hadc.lock);
+
+  (* Check if a regular conversion is ongoing *)
+  if (hadc.State = HAL_ADC_STATE_BUSY_REG) then
+  begin
+    (* Change ADC state *)
+    hadc.State := HAL_ADC_STATE_BUSY_INJ_REG;
+  end
+  else
+  begin
+    (* Change ADC state *)
+    hadc.State := HAL_ADC_STATE_BUSY_INJ;
+  end;
+
+  (* Set ADC error code to none *)
+  hadc.ErrorCode := HAL_ADC_ERROR_NONE;
+
+  (* Check if ADC peripheral is disabled in order to enable it and wait during
+     Tstab time the ADC's stabilization *)
+  if ((hadc.Instance^.CR2 and ADC_CR2_ADON) <> ADC_CR2_ADON) then
+  begin
+    (* Enable the Peripheral *)
+    __HAL_ADC_ENABLE(hadc);
+
+    (* Delay for temperature sensor stabilization time *)
+    (* Compute number of CPU cycles to wait for *)
+    counter := (ADC_STAB_DELAY_US * (SystemCoreClock div 1000000));
+    while (counter <> 0) do
+    begin
+      Dec(counter);
+    end;
+  end;
+
+  (* Enable the ADC end of conversion interrupt for injected group *)
+  __HAL_ADC_ENABLE_IT(hadc, ADC_IT_JEOC);
+
+  (* Enable the ADC overrun interrupt *)
+  __HAL_ADC_ENABLE_IT(hadc, ADC_IT_OVR);
+
+  (* Check if Multimode enabled *)
+  if (HAL_IS_BIT_CLR(C_ADC.CCR, ADC_CCR_MULTI)) then
+  begin
+    tmp1 := HAL_IS_BIT_CLR(hadc.Instance^.CR2, ADC_CR2_JEXTEN);
+    tmp2 := HAL_IS_BIT_CLR(hadc.Instance^.CR1, ADC_CR1_JAUTO);
+    if (tmp1 and tmp2) then
+    begin
+      (* Enable the selected ADC software conversion for injected group *)
+      hadc.Instance^.CR2 := hadc.Instance^.CR2 or ADC_CR2_JSWSTART;
+    end;
+  end
+  else
+  begin
+    tmp1 := HAL_IS_BIT_CLR(hadc.Instance^.CR2, ADC_CR2_JEXTEN);
+    tmp2 := HAL_IS_BIT_CLR(hadc.Instance^.CR1, ADC_CR1_JAUTO);
+    if ((hadc.Instance = @ADC1) and tmp1 and tmp2) then
+    begin
+      (* Enable the selected ADC software conversion for injected group *)
+      hadc.Instance^.CR2 := hadc.Instance^.CR2 or ADC_CR2_JSWSTART;
+    end;
+  end;
+
+  (* Process unlocked *)
+  __HAL_Unlock(hadc.lock);
+
+  (* Return function status *)
+  exit(HAL_OK);
+
+end;
+
+function HAL_ADCEx_InjectedStop_IT(var hadc: ADC_HandleTypeDef): HAL_StatusTypeDef;
+begin
+  (* Disable the ADC end of conversion interrupt for regular group *)
+  __HAL_ADC_DISABLE_IT(hadc, ADC_IT_EOC);
+
+  (* Disable the ADC end of conversion interrupt for injected group *)
+  __HAL_ADC_DISABLE_IT(hadc, ADC_CR1_JEOCIE);
+
+  (* Enable the Peripheral *)
+  __HAL_ADC_DISABLE(hadc);
+
+  (* Change ADC state *)
+  hadc.State := HAL_ADC_STATE_READY;
+
+  (* Return function status *)
+  exit(HAL_OK);
+
+end;
+
+function HAL_ADCEx_InjectedGetValue(var hadc: ADC_HandleTypeDef; InjectedRank: longword): longword;
+var
+  tmp: longword;
+begin
+  (* Clear the ADCx's flag for injected end of conversion *)
+  __HAL_ADC_CLEAR_FLAG(hadc, ADC_FLAG_JEOC);
+
+  (* Return the selected ADC converted value *)
+  case InjectedRank of
+    ADC_INJECTED_RANK_4:
+      tmp := hadc.Instance^.JDR4;
+    ADC_INJECTED_RANK_3:
+      tmp := hadc.Instance^.JDR3;
+    ADC_INJECTED_RANK_2:
+      tmp := hadc.Instance^.JDR2;
+    ADC_INJECTED_RANK_1:
+      tmp := hadc.Instance^.JDR1;
+  end;
+  exit(tmp);
+end;
+
+function HAL_ADCEx_MultiModeStart_DMA(var hadc: ADC_HandleTypeDef; pData: Plongword; Length: longword): HAL_StatusTypeDef;
+var
+  counter: longword;
+begin
+  (* Process locked *)
+  __HAL_Lock(hadc.lock);
+
+  (* Enable ADC overrun interrupt *)
+  __HAL_ADC_ENABLE_IT(hadc, ADC_IT_OVR);
+
+  if (hadc.Init.DMAContinuousRequests <> 0) then
+  begin
+    (* Enable the selected ADC DMA request after last transfer *)
+    C_ADC.CCR := C_ADC.CCR or ADC_CCR_DDS;
+  end
+  else
+  begin
+    (* Disable the selected ADC EOC rising on each regular channel conversion *)
+    C_ADC.CCR := C_ADC.CCR and (not ADC_CCR_DDS);
+  end;
+
+  (* Set the DMA transfer complete callback *)
+  hadc.DMA_Handle^.XferCpltCallback := @ADC_MultiModeDMAConvCplt;
+
+  (* Set the DMA half transfer complete callback *)
+  hadc.DMA_Handle^.XferHalfCpltCallback := @ADC_MultiModeDMAHalfConvCplt;
+
+  (* Set the DMA error callback *)
+  hadc.DMA_Handle^.XferErrorCallback := @ADC_MultiModeDMAError;
+
+  (* Enable the DMA Stream *)
+  HAL_DMA_Start_IT(hadc.DMA_Handle^, @C_ADC.CDR, pData, Length);
+
+  (* Change ADC state *)
+  hadc.State := HAL_ADC_STATE_BUSY_REG;
+
+  (* Check if ADC peripheral is disabled in order to enable it and wait during
+     Tstab time the ADC's stabilization *)
+  if ((hadc.Instance^.CR2 and ADC_CR2_ADON) <> ADC_CR2_ADON) then
+  begin
+    (* Enable the Peripheral *)
+    __HAL_ADC_ENABLE(hadc);
+
+    (* Delay for temperature sensor stabilization time *)
+    (* Compute number of CPU cycles to wait for *)
+    counter := (ADC_STAB_DELAY_US * (SystemCoreClock div 1000000));
+    while (counter <> 0) do
+    begin
+      Dec(counter);
+    end;
+  end;
+
+  (* if no external trigger present enable software conversion of regular channels *)
+  if ((hadc.Instance^.CR2 and ADC_CR2_EXTEN) = 0) then
+  begin
+    (* Enable the selected ADC software conversion for regular group *)
+    hadc.Instance^.CR2 := hadc.Instance^.CR2 or ADC_CR2_SWSTART;
+  end;
+
+  (* Process unlocked *)
+  __HAL_Unlock(hadc.lock);
+
+  (* Return function status *)
+  exit(HAL_OK);
+end;
+
+function HAL_ADCEx_MultiModeStop_DMA(var hadc: ADC_HandleTypeDef): HAL_StatusTypeDef;
+begin
+  (* Process locked *)
+  __HAL_Lock(hadc.lock);
+
+  (* Enable the Peripheral *)
+  __HAL_ADC_DISABLE(hadc);
+
+  (* Disable ADC overrun interrupt *)
+  __HAL_ADC_DISABLE_IT(hadc, ADC_IT_OVR);
+
+  (* Disable the selected ADC DMA request after last transfer *)
+  C_ADC.CCR := C_ADC.CCR and (not ADC_CCR_DDS);
+
+  (* Disable the ADC DMA Stream *)
+  HAL_DMA_Abort(hadc.DMA_Handle^);
+
+  (* Change ADC state *)
+  hadc.State := HAL_ADC_STATE_READY;
+
+  (* Process unlocked *)
+  __HAL_Unlock(hadc.lock);
+
+  (* Return function status *)
+  exit(HAL_OK);
+end;
+
+function HAL_ADCEx_MultiModeGetValue(var hadc: ADC_HandleTypeDef): longword;
+begin
+  (* Return the multi mode conversion value *)
+  exit(C_ADC.CDR);
+end;
+
+function HAL_ADCEx_InjectedConfigChannel(var hadc: ADC_HandleTypeDef; var sConfigInjected: ADC_InjectionConfTypeDef): HAL_StatusTypeDef;
+begin
+  (* Process locked *)
+  __HAL_Lock(hadc.lock);
+
+  (* if ADC_Channel_10 ... ADC_Channel_18 is selected *)
+  if (sConfigInjected.InjectedChannel > ADC_CHANNEL_9) then
+  begin
+    (* Clear the old sample time *)
+    hadc.Instance^.SMPR1 := hadc.Instance^.SMPR1 and (not ADC_SMPR1(ADC_SMPR1_SMP10, sConfigInjected.InjectedChannel));
+
+    (* Set the new sample time *)
+    hadc.Instance^.SMPR1 := hadc.Instance^.SMPR1 or ADC_SMPR1(sConfigInjected.InjectedSamplingTime, sConfigInjected.InjectedChannel);
+  end
+  else (* ADC_Channel include in ADC_Channel_[0..9] *)
+  begin
+    (* Clear the old sample time *)
+    hadc.Instance^.SMPR2 := hadc.Instance^.SMPR2 and (not ADC_SMPR2(ADC_SMPR2_SMP0, sConfigInjected.InjectedChannel));
+
+    (* Set the new sample time *)
+    hadc.Instance^.SMPR2 := hadc.Instance^.SMPR2 or ADC_SMPR2(sConfigInjected.InjectedSamplingTime, sConfigInjected.InjectedChannel);
+  end;
+
+  (*---------------------------- ADCx JSQR Configuration -----------------*)
+  hadc.Instance^.JSQR := hadc.Instance^.JSQR and (not (ADC_JSQR_JL));
+  hadc.Instance^.JSQR := hadc.Instance^.JSQR or ADC_SQR1(sConfigInjected.InjectedNbrOfConversion);
+
+  (* Rank configuration *)
+
+  (* Clear the old SQx bits for the selected rank *)
+  hadc.Instance^.JSQR := hadc.Instance^.JSQR and (not ADC_JSQR(ADC_JSQR_JSQ1, sConfigInjected.InjectedRank, sConfigInjected.InjectedNbrOfConversion));
+
+  (* Set the SQx bits for the selected rank *)
+  hadc.Instance^.JSQR := hadc.Instance^.JSQR or ADC_JSQR(sConfigInjected.InjectedChannel, sConfigInjected.InjectedRank, sConfigInjected.InjectedNbrOfConversion);
+
+  (* Select external trigger to start conversion *)
+  hadc.Instance^.CR2 := hadc.Instance^.CR2 and (not (ADC_CR2_JEXTSEL));
+  hadc.Instance^.CR2 := hadc.Instance^.CR2 or sConfigInjected.ExternalTrigInjecConv;
+
+  (* Select external trigger polarity *)
+  hadc.Instance^.CR2 := hadc.Instance^.CR2 and (not (ADC_CR2_JEXTEN));
+  hadc.Instance^.CR2 := hadc.Instance^.CR2 or sConfigInjected.ExternalTrigInjecConvEdge;
+
+  if (sConfigInjected.AutoInjectedConv <> 0) then
+  begin
+    (* Enable the selected ADC automatic injected group conversion *)
+    hadc.Instance^.CR1 := hadc.Instance^.CR1 or ADC_CR1_JAUTO;
+  end
+  else
+  begin
+    (* Disable the selected ADC automatic injected group conversion *)
+    hadc.Instance^.CR1 := hadc.Instance^.CR1 and (not (ADC_CR1_JAUTO));
+  end;
+
+  if (sConfigInjected.InjectedDiscontinuousConvMode <> 0) then
+  begin
+    (* Enable the selected ADC injected discontinuous mode *)
+    hadc.Instance^.CR1 := hadc.Instance^.CR1 or ADC_CR1_JDISCEN;
+  end
+  else
+  begin
+    (* Disable the selected ADC injected discontinuous mode *)
+    hadc.Instance^.CR1 := hadc.Instance^.CR1 and (not (ADC_CR1_JDISCEN));
+  end;
+
+  case sConfigInjected.InjectedRank of
+    1:
+    begin
+      (* Set injected channel 1 offset *)
+      hadc.Instance^.JOFR1 := hadc.Instance^.JOFR1 and (not (ADC_JOFR1_JOFFSET1));
+      hadc.Instance^.JOFR1 := hadc.Instance^.JOFR1 or sConfigInjected.InjectedOffset;
+    end;
+    2:
+    begin
+      (* Set injected channel 2 offset *)
+      hadc.Instance^.JOFR2 := hadc.Instance^.JOFR2 and (not (ADC_JOFR2_JOFFSET2));
+      hadc.Instance^.JOFR2 := hadc.Instance^.JOFR2 or sConfigInjected.InjectedOffset;
+    end;
+    3:
+    begin
+      (* Set injected channel 3 offset *)
+      hadc.Instance^.JOFR3 := hadc.Instance^.JOFR3 and (not (ADC_JOFR3_JOFFSET3));
+      hadc.Instance^.JOFR3 := hadc.Instance^.JOFR3 or sConfigInjected.InjectedOffset;
+    end;
+    else
+    begin
+      (* Set injected channel 4 offset *)
+      hadc.Instance^.JOFR4 := hadc.Instance^.JOFR4 and (not (ADC_JOFR4_JOFFSET4));
+      hadc.Instance^.JOFR4 := hadc.Instance^.JOFR4 or sConfigInjected.InjectedOffset;
+    end;
+  end;
+
+  (* if ADC1 Channel_18 is selected enable VBAT Channel *)
+  if ((hadc.Instance = @ADC1) and (sConfigInjected.InjectedChannel = ADC_CHANNEL_VBAT)) then
+  begin
+    (* Enable the VBAT channel*)
+    C_ADC.CCR := C_ADC.CCR or ADC_CCR_VBATE;
+  end;
+
+  (* if ADC1 Channel_16 or Channel_17 is selected enable TSVREFE Channel(Temperature sensor and VREFINT) *)
+  if ((hadc.Instance = @ADC1) and ((sConfigInjected.InjectedChannel = ADC_CHANNEL_TEMPSENSOR) or (sConfigInjected.InjectedChannel = ADC_CHANNEL_VREFINT))) then
+  begin
+    (* Enable the TSVREFE channel*)
+    C_ADC.CCR := C_ADC.CCR or ADC_CCR_TSVREFE;
+  end;
+
+  (* Process unlocked *)
+  __HAL_Unlock(hadc.lock);
+
+  (* Return function status *)
+  exit(HAL_OK);
+end;
+
+function HAL_ADCEx_MultiModeConfigChannel(var hadc: ADC_HandleTypeDef; var multimode: ADC_MultiModeTypeDef): HAL_StatusTypeDef;
+begin
+  (* Process locked *)
+  __HAL_Lock(hadc.lock);
+
+  (* Set ADC mode *)
+  C_ADC.CCR := C_ADC.CCR and (not (ADC_CCR_MULTI));
+  C_ADC.CCR := C_ADC.CCR or multimode.Mode;
+
+  (* Set the C_ADC DMA access mode *)
+  C_ADC.CCR := C_ADC.CCR and (not (ADC_CCR_DMA));
+  C_ADC.CCR := C_ADC.CCR or multimode.DMAAccessMode;
+
+  (* Set delay between two sampling phases *)
+  C_ADC.CCR := C_ADC.CCR and (not (ADC_CCR_DELAY));
+  C_ADC.CCR := C_ADC.CCR or multimode.TwoSamplingDelay;
+
+  (* Process unlocked *)
+  __HAL_Unlock(hadc.lock);
+
+  (* Return function status *)
+  exit(HAL_OK);
+end;
+
+function ADC_JSQR(_CHANNELNB_, _RANKNB_, _JSQR_JL_: longword): longword;
+begin
+  exit((((_CHANNELNB_))) shl (5 * (((_RANKNB_) + 3) - (_JSQR_JL_))));
+end;
 
 procedure HAL_ADCEx_InjectedConvCpltCallback_stub(var hadc: ADC_HandleTypeDef); assembler; nostackframe; public name 'HAL_ADCEx_InjectedConvCpltCallback';
   asm
@@ -194,5 +734,4 @@ procedure HAL_ADCEx_InjectedConvCpltCallback_stub(var hadc: ADC_HandleTypeDef); 
   end;
 
 end.
-
 

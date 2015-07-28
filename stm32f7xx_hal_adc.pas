@@ -399,6 +399,15 @@ const
   ADC_REGULAR_CHANNELS = ($00000002);  (*!< reserved for future use  *)
   ADC_INJECTED_CHANNELS = ($00000003);  (*!< reserved for future use  *)
 
+  (* Delay for ADC stabilization time.                                         *)
+  (* Maximum delay is 1us (refer to device datasheet, parameter tSTAB).        *)
+  (* Unit: us                                                                  *)
+  ADC_STAB_DELAY_US = (3);
+  (* Delay for temperature sensor stabilization time.                          *)
+  (* Maximum delay is 10us (refer to device datasheet, parameter tSTART).      *)
+  (* Unit: us                                                                  *)
+  ADC_TEMPSENSOR_DELAY_US = (10);
+
 function HAL_ADC_Init(var hadc: ADC_HandleTypeDef): HAL_StatusTypeDef;
 function HAL_ADC_DeInit(var hadc: ADC_HandleTypeDef): HAL_StatusTypeDef;
 procedure HAL_ADC_MspInit(var hadc: ADC_HandleTypeDef); external name 'HAL_ADC_MspInit';
@@ -429,6 +438,19 @@ function HAL_ADC_AnalogWDGConfig(var hadc: ADC_HandleTypeDef; const AnalogWDGCon
 function HAL_ADC_GetState(var hadc: ADC_HandleTypeDef): HAL_ADC_StateTypeDef;
 function HAL_ADC_GetError(var hadc: ADC_HandleTypeDef): longword;
 
+function ADC_SQR1(_NbrOfConversion_: longword): longword;
+function ADC_SMPR1(_SAMPLETIME_, _CHANNELNB_: longword): longword;
+function ADC_SMPR2(_SAMPLETIME_, _CHANNELNB_: longword): longword;
+function ADC_SQR3_RK(_CHANNELNB_, _RANKNB_: longword): longword;
+function ADC_SQR2_RK(_CHANNELNB_, _RANKNB_: longword): longword;
+function ADC_SQR1_RK(_CHANNELNB_, _RANKNB_: longword): longword;
+function ADC_CR2_CONTINUOUS(_CONTINUOUS_MODE_: longword): longword;
+function ADC_CR1_DISCONTINUOUS(_NBR_DISCONTINUOUSCONV_: longword): longword;
+function ADC_CR1_SCANCONV(_SCANCONV_MODE_: longword): longword;
+function ADC_CR2_EOCSelection(_EOCSelection_MODE_: longword): longword;
+function ADC_CR2_DMAContReq(_DMAContReq_MODE_: longword): longword;
+function ADC_GET_RESOLUTION(var __HANDLE__: ADC_HandleTypeDef): longword;
+
 procedure __HAL_ADC_RESET_HANDLE_STATE(var __HANDLE__: ADC_HandleTypeDef);
 procedure __HAL_ADC_ENABLE(var __HANDLE__: ADC_HandleTypeDef);
 procedure __HAL_ADC_DISABLE(var __HANDLE__: ADC_HandleTypeDef);
@@ -442,16 +464,6 @@ implementation
 
 uses
   stm32f7xx_hal_adc_ex;
-
-const
-  (* Delay for ADC stabilization time.                                         *)
-  (* Maximum delay is 1us (refer to device datasheet, parameter tSTAB).        *)
-  (* Unit: us                                                                  *)
-  ADC_STAB_DELAY_US = (3);
-  (* Delay for temperature sensor stabilization time.                          *)
-  (* Maximum delay is 10us (refer to device datasheet, parameter tSTART).      *)
-  (* Unit: us                                                                  *)
-  ADC_TEMPSENSOR_DELAY_US = (10);
 
 procedure __HAL_ADC_RESET_HANDLE_STATE(var __HANDLE__: ADC_HandleTypeDef);
 begin
