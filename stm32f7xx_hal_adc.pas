@@ -401,8 +401,8 @@ const
 
 function HAL_ADC_Init(var hadc: ADC_HandleTypeDef): HAL_StatusTypeDef;
 function HAL_ADC_DeInit(var hadc: ADC_HandleTypeDef): HAL_StatusTypeDef;
-procedure HAL_ADC_MspInit(var hadc: ADC_HandleTypeDef);
-procedure HAL_ADC_MspDeInit(var hadc: ADC_HandleTypeDef);
+procedure HAL_ADC_MspInit(var hadc: ADC_HandleTypeDef); external name 'HAL_ADC_MspInit';
+procedure HAL_ADC_MspDeInit(var hadc: ADC_HandleTypeDef); external name 'HAL_ADC_MspDeInit';
 
 (* I/O operation functions ***************************************************** *)
 function HAL_ADC_Start(var hadc: ADC_HandleTypeDef): HAL_StatusTypeDef;
@@ -428,6 +428,15 @@ function HAL_ADC_AnalogWDGConfig(var hadc: ADC_HandleTypeDef; const AnalogWDGCon
 (* Peripheral State functions ************************************************** *)
 function HAL_ADC_GetState(var hadc: ADC_HandleTypeDef): HAL_ADC_StateTypeDef;
 function HAL_ADC_GetError(var hadc: ADC_HandleTypeDef): longword;
+
+procedure __HAL_ADC_RESET_HANDLE_STATE(var __HANDLE__: ADC_HandleTypeDef);
+procedure __HAL_ADC_ENABLE(var __HANDLE__: ADC_HandleTypeDef);
+procedure __HAL_ADC_DISABLE(var __HANDLE__: ADC_HandleTypeDef);
+procedure __HAL_ADC_ENABLE_IT(var __HANDLE__: ADC_HandleTypeDef; __INTERRUPT__: longword);
+procedure __HAL_ADC_DISABLE_IT(var __HANDLE__: ADC_HandleTypeDef; __INTERRUPT__: longword);
+function __HAL_ADC_GET_IT_SOURCE(var __HANDLE__: ADC_HandleTypeDef; __INTERRUPT__: longword): boolean;
+procedure __HAL_ADC_CLEAR_FLAG(var __HANDLE__: ADC_HandleTypeDef; __FLAG__: longword);
+function __HAL_ADC_GET_FLAG(var __HANDLE__: ADC_HandleTypeDef; __FLAG__: longword): boolean;
 
 implementation
 
@@ -484,9 +493,231 @@ begin
   exit((((__HANDLE__).Instance^.SR) and (__FLAG__)) = (__FLAG__));
 end;
 
+(**
+  * @brief  Set ADC Regular channel sequence length.
+  * @param  _NbrOfConversion_: Regular channel sequence length.
+  * @retval None
+  *)
+function ADC_SQR1(_NbrOfConversion_: longword): longword;
+begin
+  exit(((_NbrOfConversion_) - 1) shl 20);
+end;
+
+(**
+  * @brief  Set the ADC's sample time for channel numbers between 10 and 18.
+  * @param  _SAMPLETIME_: Sample time parameter.
+  * @param  _CHANNELNB_: Channel number.
+  * @retval None
+  *)
+  function ADC_SMPR1(_SAMPLETIME_, _CHANNELNB_: longword): longword;
+begin
+  exit((_SAMPLETIME_) shl (3 * ((((_CHANNELNB_))) - 10)));
+end;
+
+(**
+  * @brief  Set the ADC's sample time for channel numbers between 0 and 9.
+  * @param  _SAMPLETIME_: Sample time parameter.
+  * @param  _CHANNELNB_: Channel number.
+  * @retval None
+  *)
+  function ADC_SMPR2(_SAMPLETIME_, _CHANNELNB_: longword): longword;
+begin
+  exit((_SAMPLETIME_) shl (3 * (((_CHANNELNB_)))));
+end;
+
+(**
+  * @brief  Set the selected regular channel rank for rank between 1 and 6.
+  * @param  _CHANNELNB_: Channel number.
+  * @param  _RANKNB_: Rank number.
+  * @retval None
+  *)
+  function ADC_SQR3_RK(_CHANNELNB_, _RANKNB_: longword): longword;
+begin
+  exit((((_CHANNELNB_))) shl (5 * ((_RANKNB_) - 1)));
+end;
+
+(**
+  * @brief  Set the selected regular channel rank for rank between 7 and 12.
+  * @param  _CHANNELNB_: Channel number.
+  * @param  _RANKNB_: Rank number.
+  * @retval None
+  *)
+  function ADC_SQR2_RK(_CHANNELNB_, _RANKNB_: longword): longword;
+begin
+  exit((((_CHANNELNB_))) shl (5 * ((_RANKNB_) - 7)));
+end;
+
+(**
+  * @brief  Set the selected regular channel rank for rank between 13 and 16.
+  * @param  _CHANNELNB_: Channel number.
+  * @param  _RANKNB_: Rank number.
+  * @retval None
+  *)
+  function ADC_SQR1_RK(_CHANNELNB_, _RANKNB_: longword): longword;
+begin
+  exit((((_CHANNELNB_))) shl (5 * ((_RANKNB_) - 13)));
+end;
+
+(**
+  * @brief  Enable ADC continuous conversion mode.
+  * @param  _CONTINUOUS_MODE_: Continuous mode.
+  * @retval None
+  *)
+  function ADC_CR2_CONTINUOUS(_CONTINUOUS_MODE_: longword): longword;
+begin
+  exit((_CONTINUOUS_MODE_) shl 1);
+end;
+
+(**
+  * @brief  Configures the number of discontinuous conversions for the regular group channels.
+  * @param  _NBR_DISCONTINUOUSCONV_: Number of discontinuous conversions.
+  * @retval None
+  *)
+  function ADC_CR1_DISCONTINUOUS(_NBR_DISCONTINUOUSCONV_: longword): longword;
+begin
+  exit(((_NBR_DISCONTINUOUSCONV_) - 1) shl BsfDWord(ADC_CR1_DISCNUM));
+end;
+
+(**
+  * @brief  Enable ADC scan mode.
+  * @param  _SCANCONV_MODE_: Scan conversion mode.
+  * @retval None
+  *)
+  function ADC_CR1_SCANCONV(_SCANCONV_MODE_: longword): longword;
+begin
+  exit((_SCANCONV_MODE_) shl 8);
+end;
+
+(**
+  * @brief  Enable the ADC end of conversion selection.
+  * @param  _EOCSelection_MODE_: End of conversion selection mode.
+  * @retval None
+  *)
+  function ADC_CR2_EOCSelection(_EOCSelection_MODE_: longword): longword;
+begin
+  exit((_EOCSelection_MODE_) shl 10);
+end;
+
+(**
+  * @brief  Enable the ADC DMA continuous request.
+  * @param  _DMAContReq_MODE_: DMA continuous request mode.
+  * @retval None
+  *)
+  function ADC_CR2_DMAContReq(_DMAContReq_MODE_: longword): longword;
+begin
+  exit((_DMAContReq_MODE_) shl 9);
+end;
+
+(**
+  * @brief Return resolution bits in CR1 register.
+  * @param __HANDLE__: ADC handle
+  * @retval None
+  *)
+  function ADC_GET_RESOLUTION(var __HANDLE__: ADC_HandleTypeDef): longword;
+begin
+  exit((__HANDLE__.Instance^.CR1) and ADC_CR1_RES);
+end;
+
+procedure ADC_Init(var hadc: ADC_HandleTypeDef);
+begin
+  (* Set ADC parameters *)
+  (* Set the ADC clock prescaler *)
+  C_ADC.CCR := C_ADC.CCR and (not (ADC_CCR_ADCPRE));
+  C_ADC.CCR := C_ADC.CCR or hadc.Init.ClockPrescaler;
+
+  (* Set ADC scan mode *)
+  hadc.Instance^.CR1 := hadc.Instance^.CR1 and (not (ADC_CR1_SCAN));
+  hadc.Instance^.CR1 := hadc.Instance^.CR1 or ADC_CR1_SCANCONV(hadc.Init.ScanConvMode);
+
+  (* Set ADC resolution *)
+  hadc.Instance^.CR1 := hadc.Instance^.CR1 and (not (ADC_CR1_RES));
+  hadc.Instance^.CR1 := hadc.Instance^.CR1 or hadc.Init.Resolution;
+
+  (* Set ADC data alignment *)
+  hadc.Instance^.CR2 := hadc.Instance^.CR2 and (not (ADC_CR2_ALIGN));
+  hadc.Instance^.CR2 := hadc.Instance^.CR2 or hadc.Init.DataAlign;
+
+  (* Enable external trigger if trigger selection is different of software  *)
+  (* start.                                                                 *)
+  (* Note: This configuration keeps the hardware feature of parameter       *)
+  (*       ExternalTrigConvEdge "trigger edge none" equivalent to           *)
+  (*       software start.                                                  *)
+  if(hadc.Init.ExternalTrigConv <> ADC_SOFTWARE_START) then
+  begin
+    (* Select external trigger to start conversion *)
+    hadc.Instance^.CR2 := hadc.Instance^.CR2 and (not (ADC_CR2_EXTSEL));
+    hadc.Instance^.CR2 := hadc.Instance^.CR2 or hadc.Init.ExternalTrigConv;
+
+    (* Select external trigger polarity *)
+    hadc.Instance^.CR2 := hadc.Instance^.CR2 and (not (ADC_CR2_EXTEN));
+    hadc.Instance^.CR2 := hadc.Instance^.CR2 or hadc.Init.ExternalTrigConvEdge;
+  end
+  else
+  begin
+    (* Reset the external trigger *)
+    hadc.Instance^.CR2 := hadc.Instance^.CR2 and (not (ADC_CR2_EXTSEL));
+    hadc.Instance^.CR2 := hadc.Instance^.CR2 and (not (ADC_CR2_EXTEN));
+  end;
+
+  (* Enable or disable ADC continuous conversion mode *)
+  hadc.Instance^.CR2 := hadc.Instance^.CR2 and (not (ADC_CR2_CONT));
+  hadc.Instance^.CR2 := hadc.Instance^.CR2 or ADC_CR2_CONTINUOUS(hadc.Init.ContinuousConvMode);
+
+  if(hadc.Init.DiscontinuousConvMode <> 0)then
+  begin
+    (* Enable the selected ADC regular discontinuous mode *)
+    hadc.Instance^.CR1 := hadc.Instance^.CR1 or ADC_CR1_DISCEN;
+
+    (* Set the number of channels to be converted in discontinuous mode *)
+    hadc.Instance^.CR1 := hadc.Instance^.CR1 and (not (ADC_CR1_DISCNUM));
+    hadc.Instance^.CR1 := hadc.Instance^.CR1 or ADC_CR1_DISCONTINUOUS(hadc.Init.NbrOfDiscConversion);
+  end
+  else
+  begin
+    (* Disable the selected ADC regular discontinuous mode *)
+    hadc.Instance^.CR1 := hadc.Instance^.CR1 and (not (ADC_CR1_DISCEN));
+  end;
+
+  (* Set ADC number of conversion *)
+  hadc.Instance^.SQR1 := hadc.Instance^.SQR1 and (not (ADC_SQR1_L));
+  hadc.Instance^.SQR1 := hadc.Instance^.SQR1 or ADC_SQR1(hadc.Init.NbrOfConversion);
+
+  (* Enable or disable ADC DMA continuous request *)
+  hadc.Instance^.CR2 := hadc.Instance^.CR2 and (not (ADC_CR2_DDS));
+  hadc.Instance^.CR2 := hadc.Instance^.CR2 or ADC_CR2_DMAContReq(hadc.Init.DMAContinuousRequests);
+
+  (* Enable or disable ADC end of conversion selection *)
+  hadc.Instance^.CR2 := hadc.Instance^.CR2 and (not (ADC_CR2_EOCS));
+  hadc.Instance^.CR2 := hadc.Instance^.CR2 or ADC_CR2_EOCSelection(hadc.Init.EOCSelection);
+end;
+
 function HAL_ADC_Init(var hadc: ADC_HandleTypeDef): HAL_StatusTypeDef;
 begin
+  if(hadc.State = HAL_ADC_STATE_RESET)then
+  begin
+    (* Allocate lock resource and initialize it *)
+    hadc.Lock := HAL_UNLOCKED;
+    (* Init the low level hardware *)
+    HAL_ADC_MspInit(hadc);
+  end;
 
+  (* Initialize the ADC state *)
+  hadc.State := HAL_ADC_STATE_BUSY;
+
+  (* Set ADC parameters *)
+  ADC_Init(hadc);
+
+  (* Set ADC error code to none *)
+  hadc.ErrorCode := HAL_ADC_ERROR_NONE;
+
+  (* Initialize the ADC state *)
+  hadc.State := HAL_ADC_STATE_READY;
+
+  (* Release Lock *)
+  __HAL_Unlock(hadc.lock);
+
+  (* Return function status *)
+  exit(HAL_OK);
 end;
 
 function HAL_ADC_DeInit(var hadc: ADC_HandleTypeDef): HAL_StatusTypeDef;
@@ -507,15 +738,15 @@ begin
   exit(HAL_OK);
 end;
 
-procedure HAL_ADC_MspInit(var hadc: ADC_HandleTypeDef);
-begin
+procedure HAL_ADC_MspInit_stub(var hadc: ADC_HandleTypeDef); assembler; nostackframe; public name 'HAL_ADC_MspInit';
+  asm
+    .weak HAL_ADC_MspInit
+  end;
 
-end;
-
-procedure HAL_ADC_MspDeInit(var hadc: ADC_HandleTypeDef);
-begin
-
-end;
+procedure HAL_ADC_MspDeInit_stub(var hadc: ADC_HandleTypeDef); assembler; nostackframe; public name 'HAL_ADC_MspDeInit';
+  asm
+    .weak HAL_ADC_MspDeInit
+  end;
 
 function HAL_ADC_Start(var hadc: ADC_HandleTypeDef): HAL_StatusTypeDef;
 var
@@ -1062,31 +1293,6 @@ procedure HAL_ADC_ErrorCallback_stub(var hadc: ADC_HandleTypeDef); assembler; no
   asm
     .weak HAL_ADC_ErrorCallback
   end;
-
-function ADC_SMPR1(_SAMPLETIME_, _CHANNELNB_: longword): longword;
-begin
-  exit((_SAMPLETIME_) shl (3 * ((_CHANNELNB_) - 10)));
-end;
-
-function ADC_SMPR2(_SAMPLETIME_, _CHANNELNB_: longword): longword;
-begin
-  exit((_SAMPLETIME_) shl (3 * ((_CHANNELNB_))));
-end;
-
-function ADC_SQR3_RK(_CHANNELNB_, _RANKNB_: longword): longword;
-begin
-  exit((((_CHANNELNB_))) shl (5 * ((_RANKNB_) - 1)));
-end;
-
-function ADC_SQR2_RK(_CHANNELNB_, _RANKNB_: longword): longword;
-begin
-  exit((((_CHANNELNB_))) shl (5 * ((_RANKNB_) - 7)));
-end;
-
-function ADC_SQR1_RK(_CHANNELNB_, _RANKNB_: longword): longword;
-begin
-  exit((((_CHANNELNB_))) shl (5 * ((_RANKNB_) - 13)));
-end;
 
 function HAL_ADC_ConfigChannel(var hadc: ADC_HandleTypeDef; const sConfig: ADC_ChannelConfTypeDef): HAL_StatusTypeDef;
 var

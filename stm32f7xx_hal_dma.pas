@@ -55,6 +55,7 @@ uses
    *)
 
 type
+  PDMA_StreamPtr = ^TDMA_StreamPtr;
   TDMA_StreamPtr = record
     CR: longword;                   // 0x10 stream x configuration register
     NDTR_bits: TDMA1_S0NDTR_bits;
@@ -143,8 +144,6 @@ type
    *)
 
 type
-  P__DMA_HandleTypeDef = ^__DMA_HandleTypeDef;
-
   __DMA_HandleTypeDef = record
     Instance: ^TDMA_StreamPtr;  (*!< Register base address                   *)
     Init: DMA_InitTypeDef;  (*!< DMA communication parameters            *)
