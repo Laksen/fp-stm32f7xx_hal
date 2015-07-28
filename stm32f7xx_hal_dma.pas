@@ -144,6 +144,7 @@ type
    *)
 
 type
+  PDMA_HandleTypeDef = ^DMA_HandleTypeDef;
   __DMA_HandleTypeDef = record
     Instance: ^TDMA_StreamPtr;  (*!< Register base address                   *)
     Init: DMA_InitTypeDef;  (*!< DMA communication parameters            *)
