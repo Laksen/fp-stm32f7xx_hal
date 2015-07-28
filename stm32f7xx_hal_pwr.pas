@@ -6,7 +6,7 @@ uses
   stm32f7xx_defs;
 
 type
-  PWR_PVDTypeDef = packed record
+  PWR_PVDTypeDef = record
     PVDLevel: longword;  (*!< PVDLevel: Specifies the PVD detection level.
                             This parameter can be a value of @ref PWR_PVD_detection_level  *)
     Mode: longword;  (*!< Mode: Specifies the operating mode for the selected pins.
