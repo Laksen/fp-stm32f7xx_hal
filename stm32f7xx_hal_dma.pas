@@ -408,6 +408,19 @@ procedure HAL_DMA_IRQHandler(var hdma: DMA_HandleTypeDef);
 function HAL_DMA_GetState(var hdma: DMA_HandleTypeDef): HAL_DMA_StateTypeDef;
 function HAL_DMA_GetError(var hdma: DMA_HandleTypeDef): longword;
 
+function __HAL_DMA_GET_IT_SOURCE(var __HANDLE__: DMA_HandleTypeDef; __INTERRUPT__: longword): boolean;
+procedure __HAL_DMA_ENABLE_IT(var __HANDLE__: DMA_HandleTypeDef; __INTERRUPT__: longword);
+procedure __HAL_DMA_DISABLE_IT(var __HANDLE__: DMA_HandleTypeDef; __INTERRUPT__: longword);
+procedure __HAL_DMA_CLEAR_FLAG(var __HANDLE__: DMA_HandleTypeDef; __FLAG__: longword);
+function __HAL_DMA_GET_DME_FLAG_INDEX(var __HANDLE__: DMA_HandleTypeDef): longword;
+function __HAL_DMA_GET_TC_FLAG_INDEX(var __HANDLE__: DMA_HandleTypeDef): longword;
+function __HAL_DMA_GET_TE_FLAG_INDEX(var __HANDLE__: DMA_HandleTypeDef): longword;
+function __HAL_DMA_GET_FE_FLAG_INDEX(var __HANDLE__: DMA_HandleTypeDef): longword;
+function __HAL_DMA_GET_HT_FLAG_INDEX(var __HANDLE__: DMA_HandleTypeDef): longword;
+function __HAL_DMA_GET_FLAG(var __HANDLE__: DMA_HandleTypeDef; __FLAG__: longword): boolean;
+procedure __HAL_DMA_ENABLE(var __HANDLE__: DMA_HandleTypeDef);
+procedure __HAL_DMA_DISABLE(var __HANDLE__: DMA_HandleTypeDef);
+
 implementation
 
 const
@@ -443,11 +456,11 @@ procedure __HAL_DMA_CLEAR_FLAG(var __HANDLE__: DMA_HandleTypeDef; __FLAG__: long
     if ptruint(__HANDLE__.Instance) > ptruint(@DMA2.S3CR) then
       DMA2.HIFCR := __FLAG__
     else if ptruint(__HANDLE__.Instance) > ptruint(@DMA1.S7CR) then
-        DMA2.LIFCR := __FLAG__
-      else if ptruint(__HANDLE__.Instance) > ptruint(@DMA1.S3CR) then
-          DMA1.HIFCR := __FLAG__
-        else
-          DMA1.LIFCR := __FLAG__;
+      DMA2.LIFCR := __FLAG__
+    else if ptruint(__HANDLE__.Instance) > ptruint(@DMA1.S3CR) then
+      DMA1.HIFCR := __FLAG__
+    else
+      DMA1.LIFCR := __FLAG__;
   end;
 
 function __HAL_DMA_GET_DME_FLAG_INDEX(var __HANDLE__: DMA_HandleTypeDef): longword;
@@ -455,32 +468,32 @@ function __HAL_DMA_GET_DME_FLAG_INDEX(var __HANDLE__: DMA_HandleTypeDef): longwo
     if __HANDLE__.Instance = @dma1.S0CR then
       exit(DMA_FLAG_DMEIF0_4)
     else if __HANDLE__.Instance = @dma2.S0CR then
-        exit(DMA_FLAG_DMEIF0_4)
-      else if __HANDLE__.Instance = @dma1.S4CR then
-          exit(DMA_FLAG_DMEIF0_4)
-        else if __HANDLE__.Instance = @dma2.S4CR then
-            exit(DMA_FLAG_DMEIF0_4)
+      exit(DMA_FLAG_DMEIF0_4)
+    else if __HANDLE__.Instance = @dma1.S4CR then
+      exit(DMA_FLAG_DMEIF0_4)
+    else if __HANDLE__.Instance = @dma2.S4CR then
+      exit(DMA_FLAG_DMEIF0_4)
 
-          else if __HANDLE__.Instance = @dma1.S1CR then
-              exit(DMA_FLAG_DMEIF1_5)
-            else if __HANDLE__.Instance = @dma2.S1CR then
-                exit(DMA_FLAG_DMEIF1_5)
-              else if __HANDLE__.Instance = @dma1.S5CR then
-                  exit(DMA_FLAG_DMEIF1_5)
-                else if __HANDLE__.Instance = @dma2.S5CR then
-                    exit(DMA_FLAG_DMEIF1_5)
+    else if __HANDLE__.Instance = @dma1.S1CR then
+      exit(DMA_FLAG_DMEIF1_5)
+    else if __HANDLE__.Instance = @dma2.S1CR then
+      exit(DMA_FLAG_DMEIF1_5)
+    else if __HANDLE__.Instance = @dma1.S5CR then
+      exit(DMA_FLAG_DMEIF1_5)
+    else if __HANDLE__.Instance = @dma2.S5CR then
+      exit(DMA_FLAG_DMEIF1_5)
 
-                  else if __HANDLE__.Instance = @dma1.S2CR then
-                      exit(DMA_FLAG_DMEIF2_6)
-                    else if __HANDLE__.Instance = @dma2.S2CR then
-                        exit(DMA_FLAG_DMEIF2_6)
-                      else if __HANDLE__.Instance = @dma1.S6CR then
-                          exit(DMA_FLAG_DMEIF2_6)
-                        else if __HANDLE__.Instance = @dma2.S6CR then
-                            exit(DMA_FLAG_DMEIF2_6)
+    else if __HANDLE__.Instance = @dma1.S2CR then
+      exit(DMA_FLAG_DMEIF2_6)
+    else if __HANDLE__.Instance = @dma2.S2CR then
+      exit(DMA_FLAG_DMEIF2_6)
+    else if __HANDLE__.Instance = @dma1.S6CR then
+      exit(DMA_FLAG_DMEIF2_6)
+    else if __HANDLE__.Instance = @dma2.S6CR then
+      exit(DMA_FLAG_DMEIF2_6)
 
-                          else
-                            exit(DMA_FLAG_DMEIF3_7);
+    else
+      exit(DMA_FLAG_DMEIF3_7);
   end;
 
 function __HAL_DMA_GET_TC_FLAG_INDEX(var __HANDLE__: DMA_HandleTypeDef): longword;
@@ -488,32 +501,32 @@ function __HAL_DMA_GET_TC_FLAG_INDEX(var __HANDLE__: DMA_HandleTypeDef): longwor
     if __HANDLE__.Instance = @dma1.S0CR then
       exit(DMA_FLAG_TCIF0_4)
     else if __HANDLE__.Instance = @dma2.S0CR then
-        exit(DMA_FLAG_TCIF0_4)
-      else if __HANDLE__.Instance = @dma1.S4CR then
-          exit(DMA_FLAG_TCIF0_4)
-        else if __HANDLE__.Instance = @dma2.S4CR then
-            exit(DMA_FLAG_TCIF0_4)
+      exit(DMA_FLAG_TCIF0_4)
+    else if __HANDLE__.Instance = @dma1.S4CR then
+      exit(DMA_FLAG_TCIF0_4)
+    else if __HANDLE__.Instance = @dma2.S4CR then
+      exit(DMA_FLAG_TCIF0_4)
 
-          else if __HANDLE__.Instance = @dma1.S1CR then
-              exit(DMA_FLAG_TCIF1_5)
-            else if __HANDLE__.Instance = @dma2.S1CR then
-                exit(DMA_FLAG_TCIF1_5)
-              else if __HANDLE__.Instance = @dma1.S5CR then
-                  exit(DMA_FLAG_TCIF1_5)
-                else if __HANDLE__.Instance = @dma2.S5CR then
-                    exit(DMA_FLAG_TCIF1_5)
+    else if __HANDLE__.Instance = @dma1.S1CR then
+      exit(DMA_FLAG_TCIF1_5)
+    else if __HANDLE__.Instance = @dma2.S1CR then
+      exit(DMA_FLAG_TCIF1_5)
+    else if __HANDLE__.Instance = @dma1.S5CR then
+      exit(DMA_FLAG_TCIF1_5)
+    else if __HANDLE__.Instance = @dma2.S5CR then
+      exit(DMA_FLAG_TCIF1_5)
 
-                  else if __HANDLE__.Instance = @dma1.S2CR then
-                      exit(DMA_FLAG_TCIF2_6)
-                    else if __HANDLE__.Instance = @dma2.S2CR then
-                        exit(DMA_FLAG_TCIF2_6)
-                      else if __HANDLE__.Instance = @dma1.S6CR then
-                          exit(DMA_FLAG_TCIF2_6)
-                        else if __HANDLE__.Instance = @dma2.S6CR then
-                            exit(DMA_FLAG_TCIF2_6)
+    else if __HANDLE__.Instance = @dma1.S2CR then
+      exit(DMA_FLAG_TCIF2_6)
+    else if __HANDLE__.Instance = @dma2.S2CR then
+      exit(DMA_FLAG_TCIF2_6)
+    else if __HANDLE__.Instance = @dma1.S6CR then
+      exit(DMA_FLAG_TCIF2_6)
+    else if __HANDLE__.Instance = @dma2.S6CR then
+      exit(DMA_FLAG_TCIF2_6)
 
-                          else
-                            exit(DMA_FLAG_TCIF3_7);
+    else
+      exit(DMA_FLAG_TCIF3_7);
   end;
 
 function __HAL_DMA_GET_TE_FLAG_INDEX(var __HANDLE__: DMA_HandleTypeDef): longword;
@@ -521,29 +534,29 @@ function __HAL_DMA_GET_TE_FLAG_INDEX(var __HANDLE__: DMA_HandleTypeDef): longwor
     if __HANDLE__.Instance = @dma1.S0CR then
       exit(DMA_FLAG_TEIF0_4)
     else if __HANDLE__.Instance = @dma2.S0CR then
-        exit(DMA_FLAG_TEIF0_4)
-      else if __HANDLE__.Instance = @dma1.S4CR then
-          exit(DMA_FLAG_TEIF0_4)
-        else if __HANDLE__.Instance = @dma2.S4CR then
-            exit(DMA_FLAG_TEIF0_4)
-          else if __HANDLE__.Instance = @dma1.S1CR then
-              exit(DMA_FLAG_TEIF1_5)
-            else if __HANDLE__.Instance = @dma2.S1CR then
-                exit(DMA_FLAG_TEIF1_5)
-              else if __HANDLE__.Instance = @dma1.S5CR then
-                  exit(DMA_FLAG_TEIF1_5)
-                else if __HANDLE__.Instance = @dma2.S5CR then
-                    exit(DMA_FLAG_TEIF1_5)
-                  else if __HANDLE__.Instance = @dma1.S2CR then
-                      exit(DMA_FLAG_TEIF2_6)
-                    else if __HANDLE__.Instance = @dma2.S2CR then
-                        exit(DMA_FLAG_TEIF2_6)
-                      else if __HANDLE__.Instance = @dma1.S6CR then
-                          exit(DMA_FLAG_TEIF2_6)
-                        else if __HANDLE__.Instance = @dma2.S6CR then
-                            exit(DMA_FLAG_TEIF2_6)
-                          else
-                            exit(DMA_FLAG_TEIF3_7);
+      exit(DMA_FLAG_TEIF0_4)
+    else if __HANDLE__.Instance = @dma1.S4CR then
+      exit(DMA_FLAG_TEIF0_4)
+    else if __HANDLE__.Instance = @dma2.S4CR then
+      exit(DMA_FLAG_TEIF0_4)
+    else if __HANDLE__.Instance = @dma1.S1CR then
+      exit(DMA_FLAG_TEIF1_5)
+    else if __HANDLE__.Instance = @dma2.S1CR then
+      exit(DMA_FLAG_TEIF1_5)
+    else if __HANDLE__.Instance = @dma1.S5CR then
+      exit(DMA_FLAG_TEIF1_5)
+    else if __HANDLE__.Instance = @dma2.S5CR then
+      exit(DMA_FLAG_TEIF1_5)
+    else if __HANDLE__.Instance = @dma1.S2CR then
+      exit(DMA_FLAG_TEIF2_6)
+    else if __HANDLE__.Instance = @dma2.S2CR then
+      exit(DMA_FLAG_TEIF2_6)
+    else if __HANDLE__.Instance = @dma1.S6CR then
+      exit(DMA_FLAG_TEIF2_6)
+    else if __HANDLE__.Instance = @dma2.S6CR then
+      exit(DMA_FLAG_TEIF2_6)
+    else
+      exit(DMA_FLAG_TEIF3_7);
   end;
 
 function __HAL_DMA_GET_FE_FLAG_INDEX(var __HANDLE__: DMA_HandleTypeDef): longword;
@@ -551,29 +564,29 @@ function __HAL_DMA_GET_FE_FLAG_INDEX(var __HANDLE__: DMA_HandleTypeDef): longwor
     if __HANDLE__.Instance = @dma1.S0CR then
       exit(DMA_FLAG_FEIF0_4)
     else if __HANDLE__.Instance = @dma2.S0CR then
-        exit(DMA_FLAG_FEIF0_4)
-      else if __HANDLE__.Instance = @dma1.S4CR then
-          exit(DMA_FLAG_FEIF0_4)
-        else if __HANDLE__.Instance = @dma2.S4CR then
-            exit(DMA_FLAG_FEIF0_4)
-          else if __HANDLE__.Instance = @dma1.S1CR then
-              exit(DMA_FLAG_FEIF1_5)
-            else if __HANDLE__.Instance = @dma2.S1CR then
-                exit(DMA_FLAG_FEIF1_5)
-              else if __HANDLE__.Instance = @dma1.S5CR then
-                  exit(DMA_FLAG_FEIF1_5)
-                else if __HANDLE__.Instance = @dma2.S5CR then
-                    exit(DMA_FLAG_FEIF1_5)
-                  else if __HANDLE__.Instance = @dma1.S2CR then
-                      exit(DMA_FLAG_FEIF2_6)
-                    else if __HANDLE__.Instance = @dma2.S2CR then
-                        exit(DMA_FLAG_FEIF2_6)
-                      else if __HANDLE__.Instance = @dma1.S6CR then
-                          exit(DMA_FLAG_FEIF2_6)
-                        else if __HANDLE__.Instance = @dma2.S6CR then
-                            exit(DMA_FLAG_FEIF2_6)
-                          else
-                            exit(DMA_FLAG_FEIF3_7);
+      exit(DMA_FLAG_FEIF0_4)
+    else if __HANDLE__.Instance = @dma1.S4CR then
+      exit(DMA_FLAG_FEIF0_4)
+    else if __HANDLE__.Instance = @dma2.S4CR then
+      exit(DMA_FLAG_FEIF0_4)
+    else if __HANDLE__.Instance = @dma1.S1CR then
+      exit(DMA_FLAG_FEIF1_5)
+    else if __HANDLE__.Instance = @dma2.S1CR then
+      exit(DMA_FLAG_FEIF1_5)
+    else if __HANDLE__.Instance = @dma1.S5CR then
+      exit(DMA_FLAG_FEIF1_5)
+    else if __HANDLE__.Instance = @dma2.S5CR then
+      exit(DMA_FLAG_FEIF1_5)
+    else if __HANDLE__.Instance = @dma1.S2CR then
+      exit(DMA_FLAG_FEIF2_6)
+    else if __HANDLE__.Instance = @dma2.S2CR then
+      exit(DMA_FLAG_FEIF2_6)
+    else if __HANDLE__.Instance = @dma1.S6CR then
+      exit(DMA_FLAG_FEIF2_6)
+    else if __HANDLE__.Instance = @dma2.S6CR then
+      exit(DMA_FLAG_FEIF2_6)
+    else
+      exit(DMA_FLAG_FEIF3_7);
   end;
 
 function __HAL_DMA_GET_HT_FLAG_INDEX(var __HANDLE__: DMA_HandleTypeDef): longword;
@@ -581,29 +594,29 @@ function __HAL_DMA_GET_HT_FLAG_INDEX(var __HANDLE__: DMA_HandleTypeDef): longwor
     if __HANDLE__.Instance = @dma1.S0CR then
       exit(DMA_FLAG_HTIF0_4)
     else if __HANDLE__.Instance = @dma2.S0CR then
-        exit(DMA_FLAG_HTIF0_4)
-      else if __HANDLE__.Instance = @dma1.S4CR then
-          exit(DMA_FLAG_HTIF0_4)
-        else if __HANDLE__.Instance = @dma2.S4CR then
-            exit(DMA_FLAG_HTIF0_4)
-          else if __HANDLE__.Instance = @dma1.S1CR then
-              exit(DMA_FLAG_HTIF1_5)
-            else if __HANDLE__.Instance = @dma2.S1CR then
-                exit(DMA_FLAG_HTIF1_5)
-              else if __HANDLE__.Instance = @dma1.S5CR then
-                  exit(DMA_FLAG_HTIF1_5)
-                else if __HANDLE__.Instance = @dma2.S5CR then
-                    exit(DMA_FLAG_HTIF1_5)
-                  else if __HANDLE__.Instance = @dma1.S2CR then
-                      exit(DMA_FLAG_HTIF2_6)
-                    else if __HANDLE__.Instance = @dma2.S2CR then
-                        exit(DMA_FLAG_HTIF2_6)
-                      else if __HANDLE__.Instance = @dma1.S6CR then
-                          exit(DMA_FLAG_HTIF2_6)
-                        else if __HANDLE__.Instance = @dma2.S6CR then
-                            exit(DMA_FLAG_HTIF2_6)
-                          else
-                            exit(DMA_FLAG_HTIF3_7);
+      exit(DMA_FLAG_HTIF0_4)
+    else if __HANDLE__.Instance = @dma1.S4CR then
+      exit(DMA_FLAG_HTIF0_4)
+    else if __HANDLE__.Instance = @dma2.S4CR then
+      exit(DMA_FLAG_HTIF0_4)
+    else if __HANDLE__.Instance = @dma1.S1CR then
+      exit(DMA_FLAG_HTIF1_5)
+    else if __HANDLE__.Instance = @dma2.S1CR then
+      exit(DMA_FLAG_HTIF1_5)
+    else if __HANDLE__.Instance = @dma1.S5CR then
+      exit(DMA_FLAG_HTIF1_5)
+    else if __HANDLE__.Instance = @dma2.S5CR then
+      exit(DMA_FLAG_HTIF1_5)
+    else if __HANDLE__.Instance = @dma1.S2CR then
+      exit(DMA_FLAG_HTIF2_6)
+    else if __HANDLE__.Instance = @dma2.S2CR then
+      exit(DMA_FLAG_HTIF2_6)
+    else if __HANDLE__.Instance = @dma1.S6CR then
+      exit(DMA_FLAG_HTIF2_6)
+    else if __HANDLE__.Instance = @dma2.S6CR then
+      exit(DMA_FLAG_HTIF2_6)
+    else
+      exit(DMA_FLAG_HTIF3_7);
   end;
 
 function __HAL_DMA_GET_FLAG(var __HANDLE__: DMA_HandleTypeDef; __FLAG__: longword): boolean;
@@ -611,11 +624,11 @@ function __HAL_DMA_GET_FLAG(var __HANDLE__: DMA_HandleTypeDef; __FLAG__: longwor
     if ptruint(__HANDLE__.Instance) > ptruint(@DMA2.S3CR) then
       exit((DMA2.HISR and __FLAG__) <> 0)
     else if ptruint(__HANDLE__.Instance) > ptruint(@DMA1.S7CR) then
-        exit((DMA2.LISR and __FLAG__) <> 0)
-      else if ptruint(__HANDLE__.Instance) > ptruint(@DMA1.S3CR) then
-          exit((DMA1.HISR and __FLAG__) <> 0)
-        else
-          exit((DMA1.LISR and __FLAG__) <> 0);
+      exit((DMA2.LISR and __FLAG__) <> 0)
+    else if ptruint(__HANDLE__.Instance) > ptruint(@DMA1.S3CR) then
+      exit((DMA1.HISR and __FLAG__) <> 0)
+    else
+      exit((DMA1.LISR and __FLAG__) <> 0);
   end;
 
 procedure __HAL_DMA_ENABLE(var __HANDLE__: DMA_HandleTypeDef);
