@@ -166,6 +166,20 @@ type
   * @}
    *)
 
+const
+  USB_OTG_GLOBAL_BASE = (  $000 );
+  USB_OTG_DEVICE_BASE = (  $800 );
+  USB_OTG_IN_ENDPOINT_BASE = (  $900 );
+  USB_OTG_OUT_ENDPOINT_BASE = (  $B00 );
+  USB_OTG_EP_REG_SIZE = (  $20 );
+  USB_OTG_HOST_BASE = (  $400 );
+  USB_OTG_HOST_PORT_BASE = (  $440 );
+  USB_OTG_HOST_CHANNEL_BASE = (  $500 );
+  USB_OTG_HOST_CHANNEL_SIZE = (  $20 );
+  USB_OTG_PCGCCTL_BASE = (  $E00 );
+  USB_OTG_FIFO_BASE = (  $1000 );
+  USB_OTG_FIFO_SIZE = (  $1000 );
+
   (**
  * @brief Configuration of the Cortex-M7 Processor and Core Peripherals
   *)

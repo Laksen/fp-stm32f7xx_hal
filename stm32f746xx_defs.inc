@@ -172,6 +172,20 @@ type
   * @}
    *)
 
+const
+  USB_OTG_GLOBAL_BASE = (  $000 );
+  USB_OTG_DEVICE_BASE = (  $800 );
+  USB_OTG_IN_ENDPOINT_BASE = (  $900 );
+  USB_OTG_OUT_ENDPOINT_BASE = (  $B00 );
+  USB_OTG_EP_REG_SIZE = (  $20 );
+  USB_OTG_HOST_BASE = (  $400 );
+  USB_OTG_HOST_PORT_BASE = (  $440 );
+  USB_OTG_HOST_CHANNEL_BASE = (  $500 );
+  USB_OTG_HOST_CHANNEL_SIZE = (  $20 );
+  USB_OTG_PCGCCTL_BASE = (  $E00 );
+  USB_OTG_FIFO_BASE = (  $1000 );
+  USB_OTG_FIFO_SIZE = (  $1000 );
+
   (**
  * @brief Configuration of the Cortex-M7 Processor and Core Peripherals
   *)
@@ -1001,6 +1015,7 @@ type
   * @brief USB_OTG_device_Registers
    *)
 
+  PUSB_OTG_DeviceTypeDef = ^USB_OTG_DeviceTypeDef;
   USB_OTG_DeviceTypeDef = record
     DCFG : longword;  (*!< dev Configuration Register   800h  *)
     DCTL : longword;  (*!< dev Control Register         804h  *)
@@ -1029,6 +1044,7 @@ type
   * @brief USB_OTG_IN_Endpoint-Specific_Register
    *)
 
+  PUSB_OTG_INEndpointTypeDef = ^USB_OTG_INEndpointTypeDef;
   USB_OTG_INEndpointTypeDef = record
     DIEPCTL : longword;  (*!< dev IN Endpoint Control Reg    900h + (ep_num * 20h) + 00h  *)
     Reserved04 : longword;  (*!< Reserved                       900h + (ep_num * 20h) + 04h  *)
@@ -1045,6 +1061,7 @@ type
   * @brief USB_OTG_OUT_Endpoint-Specific_Registers
    *)
 
+  PUSB_OTG_OUTEndpointTypeDef = ^USB_OTG_OUTEndpointTypeDef;
   USB_OTG_OUTEndpointTypeDef = record
     DOEPCTL : longword;  (*!< dev OUT Endpoint Control Reg           B00h + (ep_num * 20h) + 00h  *)
     Reserved04 : longword;  (*!< Reserved                               B00h + (ep_num * 20h) + 04h  *)
@@ -1060,6 +1077,7 @@ type
   * @brief USB_OTG_Host_Mode_Register_Structures
    *)
 
+  PUSB_OTG_HostTypeDef = ^USB_OTG_HostTypeDef;
   USB_OTG_HostTypeDef = record
     HCFG : longword;  (*!< Host Configuration Register          400h  *)
     HFIR : longword;  (*!< Host Frame Interval Register         404h  *)
@@ -1074,6 +1092,7 @@ type
   * @brief USB_OTG_Host_Channel_Specific_Registers
    *)
 
+  PUSB_OTG_HostChannelTypeDef = ^USB_OTG_HostChannelTypeDef;
   USB_OTG_HostChannelTypeDef = record
     HCCHAR : longword;  (*!< Host Channel Characteristics Register    500h  *)
     HCSPLT : longword;  (*!< Host Channel Split Control Register      504h  *)
