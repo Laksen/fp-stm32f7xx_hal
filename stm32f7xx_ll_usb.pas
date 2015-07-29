@@ -124,7 +124,7 @@ type
   USB_OTG_EPTypeDef = record
     num: byte;  (*!< Endpoint number
                                 This parameter must be a number between Min_Data = 1 and Max_Data = 15     *)
-    is_in: byte;  (*!< Endpoint direction
+    is_in: boolean;  (*!< Endpoint direction
                                 This parameter must be a number between Min_Data = 0 and Max_Data = 1      *)
     is_stall: byte;  (*!< Endpoint stall condition
                                 This parameter must be a number between Min_Data = 0 and Max_Data = 1      *)
@@ -139,7 +139,7 @@ type
     maxpacket: longword;  (*!< Endpoint Max packet size
                                  This parameter must be a number between Min_Data = 0 and Max_Data = 64KB  *)
     xfer_buff: Pbyte;  (*!< Pointer to transfer buffer                                                *)
-    dma_addr: longword;  (*!< 32 bits aligned transfer buffer address                                   *)
+    dma_addr: pbyte;  (*!< 32 bits aligned transfer buffer address                                   *)
     xfer_len: longword;  (*!< Current transfer length                                                   *)
     xfer_count: longword;  (*!< Partial transfer length in case of multi packet transfer                  *)
   end;
@@ -361,7 +361,7 @@ function USB_DevConnect(var USBx: USB_OTG_GlobalTypeDef): HAL_StatusTypeDef;
 function USB_DevDisconnect(var USBx: USB_OTG_GlobalTypeDef): HAL_StatusTypeDef;
 function USB_StopDevice(var USBx: USB_OTG_GlobalTypeDef): HAL_StatusTypeDef;
 function USB_ActivateSetup(var USBx: USB_OTG_GlobalTypeDef): HAL_StatusTypeDef;
-function USB_EP0_OutStart(var USBx: USB_OTG_GlobalTypeDef; dma: byte; psetup: Pbyte): HAL_StatusTypeDef;
+function USB_EP0_OutStart(var USBx: USB_OTG_GlobalTypeDef; dma: boolean; psetup: Pbyte): HAL_StatusTypeDef;
 function USB_GetDevSpeed(var USBx: USB_OTG_GlobalTypeDef): byte;
 function USB_GetMode(var USBx: USB_OTG_GlobalTypeDef): longword;
 function USB_ReadInterrupts(var USBx: USB_OTG_GlobalTypeDef): longword;
@@ -382,6 +382,19 @@ function USB_HC_ReadInterrupt(var USBx: USB_OTG_GlobalTypeDef): longword;
 function USB_HC_Halt(var USBx: USB_OTG_GlobalTypeDef; hc_num: byte): HAL_StatusTypeDef;
 function USB_DoPing(var USBx: USB_OTG_GlobalTypeDef; ch_num: byte): HAL_StatusTypeDef;
 function USB_StopHost(var USBx: USB_OTG_GlobalTypeDef): HAL_StatusTypeDef;
+
+function USBx_PCGCCTL(var USBx: USB_OTG_GlobalTypeDef): plongword; inline;
+function USBx_HPRT0(var USBx: USB_OTG_GlobalTypeDef): plongword; inline;
+function USBx_DEVICE(var USBx: USB_OTG_GlobalTypeDef): PUSB_OTG_DeviceTypeDef; inline;
+function USBx_INEP(var USBx: USB_OTG_GlobalTypeDef; i: longword): PUSB_OTG_INEndpointTypeDef; inline;
+function USBx_OUTEP(var USBx: USB_OTG_GlobalTypeDef; i: longword): PUSB_OTG_OUTEndpointTypeDef; inline;
+function USBx_DFIFO(var USBx: USB_OTG_GlobalTypeDef; i: longword): plongword; inline;
+function USBx_HOST(var USBx: USB_OTG_GlobalTypeDef): PUSB_OTG_HostTypeDef; inline;
+function USBx_HC(var USBx: USB_OTG_GlobalTypeDef; i: longword): PUSB_OTG_HostChannelTypeDef; inline;
+procedure USB_MASK_INTERRUPT(var __INSTANCE__: USB_OTG_GlobalTypeDef; __INTERRUPT__: longword);
+procedure USB_UNMASK_INTERRUPT(var __INSTANCE__: USB_OTG_GlobalTypeDef; __INTERRUPT__: longword);
+procedure CLEAR_IN_EP_INTR(var __INSTANCE__: USB_OTG_GlobalTypeDef; __EPNUM__, __INTERRUPT__: longword);
+procedure CLEAR_OUT_EP_INTR(var __INSTANCE__: USB_OTG_GlobalTypeDef; __EPNUM__, __INTERRUPT__: longword);
 
 implementation
 
@@ -682,7 +695,7 @@ end;
 
 function USB_ActivateEndpoint(var USBx: USB_OTG_GlobalTypeDef; var ep: USB_OTG_EPTypeDef): HAL_StatusTypeDef;
 begin
-  if (ep.is_in = 1) then
+  if (ep.is_in) then
   begin
     USBx_DEVICE(USBx)^.DAINTMSK := USBx_DEVICE(USBx)^.DAINTMSK or longword(USB_OTG_DAINTMSK_IEPM and ((1 shl (ep.num))));
 
@@ -702,7 +715,7 @@ end;
 function USB_DeactivateEndpoint(var USBx: USB_OTG_GlobalTypeDef; var ep: USB_OTG_EPTypeDef): HAL_StatusTypeDef;
 begin
   (* Read DEPCTLn register *)
-  if (ep.is_in = 1) then
+  if (ep.is_in) then
   begin
     USBx_DEVICE(USBx)^.DEACHMSK := USBx_DEVICE(USBx)^.DEACHMSK and (not (USB_OTG_DAINTMSK_IEPM and ((1 shl (ep.num)))));
     USBx_DEVICE(USBx)^.DAINTMSK := USBx_DEVICE(USBx)^.DAINTMSK and (not (USB_OTG_DAINTMSK_IEPM and ((1 shl (ep.num)))));
@@ -724,7 +737,7 @@ begin
   //debug := 0;
 
   (* Read DEPCTLn register *)
-  if (ep.is_in = 1) then
+  if (ep.is_in ) then
   begin
     if (((USBx_INEP(usbx,ep.num)^.DIEPCTL) and USB_OTG_DIEPCTL_USBAEP) = 0) then
     begin
@@ -754,7 +767,7 @@ end;
 function USB_DeactivateDedicatedEndpoint(var USBx: USB_OTG_GlobalTypeDef; var ep: USB_OTG_EPTypeDef): HAL_StatusTypeDef;
 begin
   (* Read DEPCTLn register *)
-  if (ep.is_in = 1) then
+  if (ep.is_in) then
   begin
     USBx_INEP(usbx,ep.num)^.DIEPCTL := USBx_INEP(usbx,ep.num)^.DIEPCTL and (not USB_OTG_DIEPCTL_USBAEP);
     USBx_DEVICE(USBx)^.DAINTMSK := USBx_DEVICE(USBx)^.DAINTMSK and (not (USB_OTG_DAINTMSK_IEPM and ((1 shl (ep.num)))));
@@ -774,7 +787,7 @@ begin
   pktcnt := 0;
 
   (* IN endpoint *)
-  if (ep.is_in = 1) then
+  if (ep.is_in) then
   begin
     (* Zero Length Packet? *)
     if (ep.xfer_len = 0) then
@@ -803,7 +816,7 @@ begin
     end;
 
     if (dma) then
-      USBx_INEP(usbx,ep.num)^.DIEPDMA := (ep.dma_addr)
+      USBx_INEP(usbx,ep.num)^.DIEPDMA := longword(ep.dma_addr)
     else
     begin
       if (ep.type_ <> EP_TYPE_ISOC) then
@@ -868,7 +881,7 @@ end;
 function USB_EP0StartXfer(var USBx: USB_OTG_GlobalTypeDef; var ep: USB_OTG_EPTypeDef; dma: boolean): HAL_StatusTypeDef;
 begin
   (* IN endpoint *)
-  if (ep.is_in = 1) then
+  if (ep.is_in) then
   begin
     (* Zero Length Packet? *)
     if (ep.xfer_len = 0) then
@@ -896,7 +909,7 @@ begin
     end;
 
     if dma then
-      USBx_INEP(usbx,ep.num)^.DIEPDMA := (ep.dma_addr)
+      USBx_INEP(usbx,ep.num)^.DIEPDMA := longword(ep.dma_addr)
     else
     begin
       (* Enable the Tx FIFO Empty Interrupt for this EP *)
@@ -966,7 +979,7 @@ end;
 
 function USB_EPSetStall(var USBx: USB_OTG_GlobalTypeDef; var ep: USB_OTG_EPTypeDef): HAL_StatusTypeDef;
 begin
-  if (ep.is_in = 1) then
+  if (ep.is_in) then
   begin
     if (((USBx_INEP(usbx,ep.num)^.DIEPCTL) and USB_OTG_DIEPCTL_EPENA) = 0) then
       USBx_INEP(usbx,ep.num)^.DIEPCTL := USBx_INEP(usbx,ep.num)^.DIEPCTL and (not (USB_OTG_DIEPCTL_EPDIS));
@@ -985,7 +998,7 @@ end;
 
 function USB_EPClearStall(var USBx: USB_OTG_GlobalTypeDef; var ep: USB_OTG_EPTypeDef): HAL_StatusTypeDef;
 begin
-  if (ep.is_in = 1) then
+  if (ep.is_in) then
   begin
     USBx_INEP(usbx,ep.num)^.DIEPCTL := USBx_INEP(usbx,ep.num)^.DIEPCTL and (not USB_OTG_DIEPCTL_STALL);
 
@@ -1065,14 +1078,14 @@ begin
   exit(HAL_OK);
 end;
 
-function USB_EP0_OutStart(var USBx: USB_OTG_GlobalTypeDef; dma: byte; psetup: Pbyte): HAL_StatusTypeDef;
+function USB_EP0_OutStart(var USBx: USB_OTG_GlobalTypeDef; dma: boolean; psetup: Pbyte): HAL_StatusTypeDef;
 begin
   USBx_OUTEP(usbx,0)^.DOEPTSIZ := 0;
   USBx_OUTEP(usbx,0)^.DOEPTSIZ := USBx_OUTEP(usbx,0)^.DOEPTSIZ or (USB_OTG_DOEPTSIZ_PKTCNT and (1 shl 19));
   USBx_OUTEP(usbx,0)^.DOEPTSIZ := USBx_OUTEP(usbx,0)^.DOEPTSIZ or (3 * 8);
   USBx_OUTEP(usbx,0)^.DOEPTSIZ := USBx_OUTEP(usbx,0)^.DOEPTSIZ or USB_OTG_DOEPTSIZ_STUPCNT;
 
-  if (dma = 1) then
+  if (dma) then
   begin
     USBx_OUTEP(usbx,0)^.DOEPDMA := longword(psetup);
     (* EP enable *)
