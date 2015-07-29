@@ -49,13 +49,11 @@ uses
   stm32f7xx_hal,
   stm32f7xx_hal_dma;
 
-const
-  MEMORY0 = $00;  (*!< Memory 0      *)
-  MEMORY1 = $01;  (*!< Memory 1      *)
-
 type
-  HAL_DMA_MemoryTypeDef = integer;
-
+  HAL_DMA_MemoryTypeDef = (
+    MEMORY0,  (*!< Memory 0      *)
+    MEMORY1   (*!< Memory 1      *)
+  );
 
 function HAL_DMAEx_MultiBufferStart(var hdma: DMA_HandleTypeDef; SrcAddress, DstAddress, SecondMemAddress, DataLength: longword): HAL_StatusTypeDef;
 function HAL_DMAEx_MultiBufferStart_IT(var hdma: DMA_HandleTypeDef; SrcAddress, DstAddress, SecondMemAddress, DataLength: longword): HAL_StatusTypeDef;

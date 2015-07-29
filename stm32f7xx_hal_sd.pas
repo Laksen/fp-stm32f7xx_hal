@@ -58,6 +58,90 @@ type
   PSD_TypeDef = ^SD_TypeDef;
 
 type
+  HAL_SD_ErrorTypedef = (
+    SD_OK =     ( 0 ),
+    SD_CMD_CRC_FAIL = ( 1 ),
+      (*!< Command response received (but CRC check failed)               *)
+    SD_DATA_CRC_FAIL = ( 2 ),
+      (*!< Data block sent/received (CRC check failed)                    *)
+    SD_CMD_RSP_TIMEOUT = ( 3 ),
+      (*!< Command response timeout                                       *)
+    SD_DATA_TIMEOUT = ( 4 ),
+      (*!< Data timeout                                                   *)
+    SD_TX_UNDERRUN = ( 5 ),
+      (*!< Transmit FIFO underrun                                         *)
+    SD_RX_OVERRUN = ( 6 ),
+      (*!< Receive FIFO overrun                                           *)
+    SD_START_BIT_ERR = ( 7 ),
+      (*!< Start bit not detected on all data signals in wide bus mode    *)
+    SD_CMD_OUT_OF_RANGE = ( 8 ),
+      (*!< Command's argument was out of range.                           *)
+    SD_ADDR_MISALIGNED = ( 9 ),
+      (*!< Misaligned address                                             *)
+    SD_BLOCK_LEN_ERR = ( 10 ),
+      (*!< Transferred block length is not allowed for the card or the number of transferred bytes does not match the block length  *)
+
+    SD_ERASE_SEQ_ERR = ( 11 ),
+      (*!< An error in the sequence of erase command occurs.             *)
+    SD_BAD_ERASE_PARAM = ( 12 ),
+      (*!< An invalid selection for erase groups                         *)
+    SD_WRITE_PROT_VIOLATION = ( 13 ),
+      (*!< Attempt to program a write protect block                      *)
+    SD_LOCK_UNLOCK_FAILED = ( 14 ),
+      (*!< Sequence or password error has been detected in unlock command or if there was an attempt to access a locked card  *)
+
+    SD_COM_CRC_FAILED = ( 15 ),
+      (*!< CRC check of the previous command failed                      *)
+    SD_ILLEGAL_CMD = ( 16 ),
+      (*!< Command is not legal for the card state                       *)
+    SD_CARD_ECC_FAILED = ( 17 ),
+      (*!< Card internal ECC was applied but failed to correct the data  *)
+    SD_CC_ERROR = ( 18 ),
+      (*!< Internal card controller error                                *)
+    SD_GENERAL_UNKNOWN_ERROR = ( 19 ),
+      (*!< General or unknown error                                      *)
+    SD_STREAM_READ_UNDERRUN = ( 20 ),
+      (*!< The card could not sustain data transfer in stream read operation.  *)
+    SD_STREAM_WRITE_OVERRUN = ( 21 ),
+      (*!< The card could not sustain data programming in stream mode    *)
+    SD_CID_CSD_OVERWRITE = ( 22 ),
+      (*!< CID/CSD overwrite error                                       *)
+    SD_WP_ERASE_SKIP = ( 23 ),
+      (*!< Only partial address space was erased                         *)
+    SD_CARD_ECC_DISABLED = ( 24 ),
+      (*!< Command has been executed without using internal ECC          *)
+    SD_ERASE_RESET = ( 25 ),
+      (*!< Erase sequence was cleared before executing because an out of erase sequence command was received  *)
+
+    SD_AKE_SEQ_ERROR = ( 26 ),
+      (*!< Error in sequence of authentication.                          *)
+    SD_INVALID_VOLTRANGE = ( 27 ),
+    SD_ADDR_OUT_OF_RANGE = ( 28 ),
+    SD_SWITCH_ERROR = ( 29 ),
+    SD_SDMMC_DISABLED = ( 30 ),
+    SD_SDMMC_FUNCTION_BUSY = ( 31 ),
+    SD_SDMMC_FUNCTION_FAILED = ( 32 ),
+    SD_SDMMC_UNKNOWN_FUNCTION = ( 33 ),
+    (**
+    * @brief  Standard error defines
+     *)
+    SD_INTERNAL_ERROR = ( 34 ),
+    SD_NOT_CONFIGURED = ( 35 ),
+    SD_REQUEST_PENDING = ( 36 ),
+    SD_REQUEST_NOT_APPLICABLE = ( 37 ),
+    SD_INVALID_PARAMETER = ( 38 ),
+    SD_UNSUPPORTED_FEATURE = ( 39 ),
+    SD_UNSUPPORTED_HW = ( 40 ),
+    SD_ERROR = ( 41 )
+  );
+
+  HAL_SD_OperationTypedef = (
+    SD_READ_SINGLE_BLOCK = 0,   (*!< Read single block operation       *)
+    SD_READ_MULTIPLE_BLOCK = 1, (*!< Read multiple blocks operation    *)
+    SD_WRITE_SINGLE_BLOCK = 2,  (*!< Write single block operation      *)
+    SD_WRITE_MULTIPLE_BLOCK = 3 (*!< Write multiple blocks operation   *)
+  );
+
   PSD_HandleTypeDef = ^SD_HandleTypeDef;
 
   SD_HandleTypeDef = record
@@ -69,9 +153,9 @@ type
     CSD: array [0..3] of longword;  (*!< SD card specific data table                     *)
     CID: array [0..3] of longword;  (*!< SD card identification number table             *)
     SdTransferCplt: longword;  (*!< SD transfer complete flag in non blocking mode  *)
-    SdTransferErr: longword;  (*!< SD transfer error flag in non blocking mode     *)
+    SdTransferErr: HAL_SD_ErrorTypedef;  (*!< SD transfer error flag in non blocking mode     *)
     DmaTransferCplt: longword;  (*!< SD DMA transfer complete flag                   *)
-    SdOperation: longword;  (*!< SD transfer operation (read/write)              *)
+    SdOperation: HAL_SD_OperationTypedef;  (*!< SD transfer operation (read/write)              *)
     hdmarx: PDMA_HandleTypeDef;  (*!< SD Rx DMA handle parameters                     *)
     hdmatx: PDMA_HandleTypeDef;  (*!< SD Tx DMA handle parameters                     *)
   end;
@@ -183,135 +267,23 @@ type
     CardType: byte;  (*!< SD card type                            *)
   end;
 
-  (**
-  * @}
-   *)
+  HAL_SD_TransferStateTypedef = (
+    SD_TRANSFER_OK = 0,    (*!< Transfer success       *)
+    SD_TRANSFER_BUSY = 1,  (*!< Transfer is occurring  *)
+    SD_TRANSFER_ERROR = 2  (*!< Transfer failed        *)
+  );
 
-  (** @defgroup SD_Exported_Types_Group6 SD Error status enumeration Structure definition
-  * @{
-   *)
-
-const
-  (**
-  * @brief  SD specific error defines
-   *)
-  SD_CMD_CRC_FAIL = (1);  (*!< Command response received (but CRC check failed)               *)
-  SD_DATA_CRC_FAIL = (2);  (*!< Data block sent/received (CRC check failed)                    *)
-  SD_CMD_RSP_TIMEOUT = (3);  (*!< Command response timeout                                       *)
-  SD_DATA_TIMEOUT = (4);  (*!< Data timeout                                                   *)
-  SD_TX_UNDERRUN = (5);  (*!< Transmit FIFO underrun                                         *)
-  SD_RX_OVERRUN = (6);  (*!< Receive FIFO overrun                                           *)
-  SD_START_BIT_ERR = (7);  (*!< Start bit not detected on all data signals in wide bus mode    *)
-  SD_CMD_OUT_OF_RANGE = (8);  (*!< Command's argument was out of range.                           *)
-  SD_ADDR_MISALIGNED = (9);  (*!< Misaligned address                                             *)
-  SD_BLOCK_LEN_ERR = (10);  (*!< Transferred block length is not allowed for the card or the number of transferred bytes does not match the block length  *)
-  SD_ERASE_SEQ_ERR = (11);  (*!< An error in the sequence of erase command occurs.             *)
-  SD_BAD_ERASE_PARAM = (12);  (*!< An invalid selection for erase groups                         *)
-  SD_WRITE_PROT_VIOLATION = (13);  (*!< Attempt to program a write protect block                      *)
-  SD_LOCK_UNLOCK_FAILED = (14);  (*!< Sequence or password error has been detected in unlock command or if there was an attempt to access a locked card  *)
-  SD_COM_CRC_FAILED = (15);  (*!< CRC check of the previous command failed                      *)
-  SD_ILLEGAL_CMD = (16);  (*!< Command is not legal for the card state                       *)
-  SD_CARD_ECC_FAILED = (17);  (*!< Card internal ECC was applied but failed to correct the data  *)
-  SD_CC_ERROR = (18);  (*!< Internal card controller error                                *)
-  SD_GENERAL_UNKNOWN_ERROR = (19);  (*!< General or unknown error                                      *)
-  SD_STREAM_READ_UNDERRUN = (20);  (*!< The card could not sustain data transfer in stream read operation.  *)
-  SD_STREAM_WRITE_OVERRUN = (21);  (*!< The card could not sustain data programming in stream mode    *)
-  SD_CID_CSD_OVERWRITE = (22);  (*!< CID/CSD overwrite error                                       *)
-  SD_WP_ERASE_SKIP = (23);  (*!< Only partial address space was erased                         *)
-  SD_CARD_ECC_DISABLED = (24);  (*!< Command has been executed without using internal ECC          *)
-  SD_ERASE_RESET = (25);  (*!< Erase sequence was cleared before executing because an out of erase sequence command was received  *)
-  SD_AKE_SEQ_ERROR = (26);  (*!< Error in sequence of authentication.                          *)
-  SD_INVALID_VOLTRANGE = (27);
-  SD_ADDR_OUT_OF_RANGE = (28);
-  SD_SWITCH_ERROR = (29);
-  SD_SDMMC_DISABLED = (30);
-  SD_SDMMC_FUNCTION_BUSY = (31);
-  SD_SDMMC_FUNCTION_FAILED = (32);
-  SD_SDMMC_UNKNOWN_FUNCTION = (33);
-  (**
-  * @brief  Standard error defines
-   *)
-  SD_INTERNAL_ERROR = (34);
-  SD_NOT_CONFIGURED = (35);
-  SD_REQUEST_PENDING = (36);
-  SD_REQUEST_NOT_APPLICABLE = (37);
-  SD_INVALID_PARAMETER = (38);
-  SD_UNSUPPORTED_FEATURE = (39);
-  SD_UNSUPPORTED_HW = (40);
-  SD_ERROR = (41);
-  SD_OK = (0);
-
-type
-  HAL_SD_ErrorTypedef = integer;
-
-  (**
-  * @}
-   *)
-
-  (** @defgroup SD_Exported_Types_Group7 SD Transfer state enumeration structure
-  * @{
-   *)
-
-const
-  SD_TRANSFER_OK = 0;  (*!< Transfer success       *)
-  SD_TRANSFER_BUSY = 1;  (*!< Transfer is occurring  *)
-  SD_TRANSFER_ERROR = 2;  (*!< Transfer failed        *)
-
-type
-  HAL_SD_TransferStateTypedef = integer;
-
-  (**
-  * @}
-   *)
-
-  (** @defgroup SD_Exported_Types_Group8 SD Card State enumeration structure
-  * @{
-   *)
-
-const
-  SD_CARD_READY = ($00000001);  (*!< Card state is ready                      *)
-  SD_CARD_IDENTIFICATION = ($00000002);  (*!< Card is in identification state          *)
-  SD_CARD_STANDBY = ($00000003);  (*!< Card is in standby state                 *)
-  SD_CARD_TRANSFER = ($00000004);  (*!< Card is in transfer state                *)
-  SD_CARD_SENDING = ($00000005);  (*!< Card is sending an operation             *)
-  SD_CARD_RECEIVING = ($00000006);  (*!< Card is receiving operation information  *)
-  SD_CARD_PROGRAMMING = ($00000007);  (*!< Card is in programming state             *)
-  SD_CARD_DISCONNECTED = ($00000008);  (*!< Card is disconnected                     *)
-  SD_CARD_ERROR = ($000000FF);  (*!< Card is in error state                   *)
-
-type
-  HAL_SD_CardStateTypedef = integer;
-
-  (**
-  * @}
-   *)
-
-  (** @defgroup SD_Exported_Types_Group9 SD Operation enumeration structure
-  * @{
-   *)
-
-const
-  SD_READ_SINGLE_BLOCK = 0;  (*!< Read single block operation       *)
-  SD_READ_MULTIPLE_BLOCK = 1;  (*!< Read multiple blocks operation    *)
-  SD_WRITE_SINGLE_BLOCK = 2;  (*!< Write single block operation      *)
-  SD_WRITE_MULTIPLE_BLOCK = 3;  (*!< Write multiple blocks operation   *)
-
-type
-  HAL_SD_OperationTypedef = integer;
-
-  (**
-  * @}
-   *)
-
-  (**
-  * @}
-   *)
-
-(* Exported constants -------------------------------------------------------- *)
-
-  (** @defgroup SD_Exported_Constants SD Exported Constants
-  * @{
-   *)
+  HAL_SD_CardStateTypedef = (
+    SD_CARD_READY = (  $00000001 ),         (*!< Card state is ready                      *)
+    SD_CARD_IDENTIFICATION = (  $00000002 ),(*!< Card is in identification state          *)
+    SD_CARD_STANDBY = (  $00000003 ),       (*!< Card is in standby state                 *)
+    SD_CARD_TRANSFER = (  $00000004 ),      (*!< Card is in transfer state                *)
+    SD_CARD_SENDING = (  $00000005 ),       (*!< Card is sending an operation             *)
+    SD_CARD_RECEIVING = (  $00000006 ),     (*!< Card is receiving operation information  *)
+    SD_CARD_PROGRAMMING = (  $00000007 ),   (*!< Card is in programming state             *)
+    SD_CARD_DISCONNECTED = (  $00000008 ),  (*!< Card is disconnected                     *)
+    SD_CARD_ERROR = (  $000000FF )          (*!< Card is in error state                   *)
+  );
 
   (**
   * @brief SD Commands Index
@@ -432,8 +404,8 @@ procedure HAL_SD_MspInit(var hsd: SD_HandleTypeDef);
 procedure HAL_SD_MspDeInit(var hsd: SD_HandleTypeDef);
 
 (* Blocking mode: Polling  *)
-function HAL_SD_ReadBlocks(var hsd: SD_HandleTypeDef; pReadBuffer: Plongword; ReadAddr: qword; BlockSize, NumberOfBlocks: longword): HAL_SD_ErrorTypedef;
-function HAL_SD_WriteBlocks(var hsd: SD_HandleTypeDef; pWriteBuffer: Plongword; WriteAddr: qword; BlockSize, NumberOfBlocks: longword): HAL_SD_ErrorTypedef;
+function HAL_SD_ReadBlocks(var hsd: SD_HandleTypeDef; var pReadBuffer; ReadAddr: qword; BlockSize, NumberOfBlocks: longword): HAL_SD_ErrorTypedef;
+function HAL_SD_WriteBlocks(var hsd: SD_HandleTypeDef; const pWriteBuffer; WriteAddr: qword; BlockSize, NumberOfBlocks: longword): HAL_SD_ErrorTypedef;
 function HAL_SD_Erase(var hsd: SD_HandleTypeDef; startaddr, endaddr: qword): HAL_SD_ErrorTypedef;
 
 (* Non-Blocking mode: Interrupt  *)
@@ -448,8 +420,8 @@ procedure HAL_SD_XferCpltCallback(var hsd: SD_HandleTypeDef);       external nam
 procedure HAL_SD_XferErrorCallback(var hsd: SD_HandleTypeDef);      external name 'HAL_SD_XferErrorCallback';
 
 (* Non-Blocking mode: DMA  *)
-function HAL_SD_ReadBlocks_DMA(var hsd: SD_HandleTypeDef; pReadBuffer: Plongword; ReadAddr: qword; BlockSize, NumberOfBlocks: longword): HAL_SD_ErrorTypedef;
-function HAL_SD_WriteBlocks_DMA(var hsd: SD_HandleTypeDef; pWriteBuffer: Plongword; WriteAddr: qword; BlockSize, NumberOfBlocks: longword): HAL_SD_ErrorTypedef;
+function HAL_SD_ReadBlocks_DMA(var hsd: SD_HandleTypeDef; var pReadBuffer; ReadAddr: qword; BlockSize, NumberOfBlocks: longword): HAL_SD_ErrorTypedef;
+function HAL_SD_WriteBlocks_DMA(var hsd: SD_HandleTypeDef; const pWriteBuffer; WriteAddr: qword; BlockSize, NumberOfBlocks: longword): HAL_SD_ErrorTypedef;
 function HAL_SD_CheckWriteOperation(var hsd: SD_HandleTypeDef; Timeout: longword): HAL_SD_ErrorTypedef;
 function HAL_SD_CheckReadOperation(var hsd: SD_HandleTypeDef; Timeout: longword): HAL_SD_ErrorTypedef;
 
@@ -1293,18 +1265,11 @@ begin
   exit(SD_OK);
 end;
 
-function SD_SendStatus(var hsd: SD_HandleTypeDef; var pCardStatus: longword): HAL_SD_ErrorTypedef;
+function SD_SendStatus(var hsd: SD_HandleTypeDef; out pCardStatus: longword): HAL_SD_ErrorTypedef;
 var
   sdmmc_cmdinitstructure: SDMMC_CmdInitTypeDef;
   errorstate: HAL_SD_ErrorTypedef;
 begin
-  if (pCardStatus = NULL) then
-  begin
-    errorstate := SD_INVALID_PARAMETER;
-
-    exit(errorstate);
-  end;
-
   (* Send Status command *)
   sdmmc_cmdinitstructure.Argument := (hsd.RCA shl 16);
   sdmmc_cmdinitstructure.CmdIndex := SD_CMD_SEND_STATUS;
@@ -1317,7 +1282,10 @@ begin
   errorstate := SD_CmdResp1Error(hsd, SD_CMD_SEND_STATUS);
 
   if (errorstate <> SD_OK) then
-    exit(errorstate);
+    begin
+      pCardStatus:=0;
+      exit(errorstate);
+    end;
 
   (* Get SD card status *)
   pCardStatus := SDMMC_GetResponse(hsd.Instance^, SDMMC_RESP1);
@@ -1335,7 +1303,7 @@ begin
     exit(HAL_SD_CardStateTypedef((resp1 shr 9) and $0F));
 end;
 
-function SD_IsCardProgramming(var hsd: SD_HandleTypeDef; var pStatus: byte): HAL_SD_ErrorTypedef;
+function SD_IsCardProgramming(var hsd: SD_HandleTypeDef; var pStatus: HAL_SD_CardStateTypedef): HAL_SD_ErrorTypedef;
 var
   errorstate: HAL_SD_ErrorTypedef;
   sdmmc_cmdinitstructure: SDMMC_CmdInitTypeDef;
@@ -1389,7 +1357,7 @@ begin
   responseR1 := SDMMC_GetResponse(hsd.Instance^, SDMMC_RESP1);
 
   (* Find out card status *)
-  pStatus := ((responseR1 shr 9) and $0000000F);
+  pStatus := HAL_SD_CardStateTypedef((responseR1 shr 9) and $0000000F);
 
   if ((responseR1 and SD_OCR_ERRORBITS) = SD_ALLZERO) then
   begin
@@ -1456,7 +1424,7 @@ begin
   exit(errorstate);
 end;
 
-function SD_FindSCR(var hsd: SD_HandleTypeDef; var pSCR): HAL_SD_ErrorTypedef;
+function SD_FindSCR(var hsd: SD_HandleTypeDef; out pSCR): HAL_SD_ErrorTypedef;
 var
   sdmmc_cmdinitstructure: SDMMC_CmdInitTypeDef;
   sdmmc_datainitstructure: SDMMC_DataInitTypeDef;
@@ -1809,7 +1777,7 @@ begin
 
 end;
 
-function HAL_SD_ReadBlocks(var hsd: SD_HandleTypeDef; pReadBuffer: Plongword; ReadAddr: qword; BlockSize, NumberOfBlocks: longword): HAL_SD_ErrorTypedef;
+function HAL_SD_ReadBlocks(var hsd: SD_HandleTypeDef; var pReadBuffer; ReadAddr: qword; BlockSize, NumberOfBlocks: longword): HAL_SD_ErrorTypedef;
 var
   sdmmc_cmdinitstructure: SDMMC_CmdInitTypeDef;
   errorstate: HAL_SD_ErrorTypedef;
@@ -1817,7 +1785,7 @@ var
   tempbuff: plongword;
   Count: longword;
 begin
-  tempbuff := pReadBuffer;
+  tempbuff := @pReadBuffer;
 
   (* Initialize data control register *)
   hsd.Instance^.DCTRL := 0;
@@ -1971,16 +1939,16 @@ begin
   exit(errorstate);
 end;
 
-function HAL_SD_WriteBlocks(var hsd: SD_HandleTypeDef; pWriteBuffer: Plongword; WriteAddr: qword; BlockSize, NumberOfBlocks: longword): HAL_SD_ErrorTypedef;
+function HAL_SD_WriteBlocks(var hsd: SD_HandleTypeDef; const pWriteBuffer; WriteAddr: qword; BlockSize, NumberOfBlocks: longword): HAL_SD_ErrorTypedef;
 var
   sdmmc_cmdinitstructure: SDMMC_CmdInitTypeDef;
   errorstate: HAL_SD_ErrorTypedef;
   sdmmc_datainitstructure: SDMMC_DataInitTypeDef;
   totalnumberofbytes, bytestransferred, restwords, Count: longword;
   tempbuff: PLongWord;
-  cardstate: byte;
+  cardstate: HAL_SD_CardStateTypedef;
 begin
-  tempbuff := pwritebuffer;
+  tempbuff := @pwritebuffer;
 
   (* Initialize data control register *)
   hsd.Instance^.DCTRL := 0;
@@ -2162,7 +2130,7 @@ begin
   __HAL_SD_SDMMC_CLEAR_FLAG(hsd, SDMMC_STATIC_FLAGS);
 
   (* Wait till the card is in programming state *)
-  cardstate:=0;
+  cardstate:=SD_CARD_READY;
   errorstate := SD_IsCardProgramming(hsd, cardstate);
   while ((errorstate = SD_OK) and ((cardstate = SD_CARD_PROGRAMMING) or (cardstate = SD_CARD_RECEIVING))) do
     errorstate := SD_IsCardProgramming(hsd, cardstate);
@@ -2175,7 +2143,7 @@ var
   errorstate: HAL_SD_ErrorTypedef;
   maxdelay, delay: longword;
   sdmmc_cmdinitstructure: SDMMC_CmdInitTypeDef;
-  cardstate: byte;
+  cardstate: HAL_SD_CardStateTypedef;
 begin
   (* Check if the card command class supports erase command *)
   if (((hsd.CSD[1] shr 20) and SD_CCCC_ERASE) = 0) then
@@ -2252,7 +2220,7 @@ begin
   while delay < maxdelay do
     Inc(delay);
 
-  cardstate:=0;
+  cardstate:=SD_CARD_READY;
   (* Wait until the card is in programming state *)
   errorstate := SD_IsCardProgramming(hsd, cardstate);
 
@@ -2355,7 +2323,7 @@ asm
   .weak HAL_SD_XferErrorCallback
 end;
 
-function HAL_SD_ReadBlocks_DMA(var hsd: SD_HandleTypeDef; pReadBuffer: Plongword; ReadAddr: qword; BlockSize, NumberOfBlocks: longword): HAL_SD_ErrorTypedef;
+function HAL_SD_ReadBlocks_DMA(var hsd: SD_HandleTypeDef; var pReadBuffer; ReadAddr: qword; BlockSize, NumberOfBlocks: longword): HAL_SD_ErrorTypedef;
 var
   sdmmc_cmdinitstructure: SDMMC_CmdInitTypeDef;
   sdmmc_datainitstructure: SDMMC_DataInitTypeDef;
@@ -2390,7 +2358,7 @@ begin
   hsd.hdmarx^.XferErrorCallback := @SD_DMA_RxError;
 
   (* Enable the DMA Channel *)
-  HAL_DMA_Start_IT(hsd.hdmarx^, @hsd.Instance^.FIFO, pReadBuffer, (BlockSize * NumberOfBlocks) div 4);
+  HAL_DMA_Start_IT(hsd.hdmarx^, @hsd.Instance^.FIFO, @pReadBuffer, (BlockSize * NumberOfBlocks) div 4);
 
   if (hsd.CardType = HIGH_CAPACITY_SD_CARD) then
   begin
@@ -2455,7 +2423,7 @@ begin
 
 end;
 
-function HAL_SD_WriteBlocks_DMA(var hsd: SD_HandleTypeDef; pWriteBuffer: Plongword; WriteAddr: qword; BlockSize, NumberOfBlocks: longword): HAL_SD_ErrorTypedef;
+function HAL_SD_WriteBlocks_DMA(var hsd: SD_HandleTypeDef; const pWriteBuffer; WriteAddr: qword; BlockSize, NumberOfBlocks: longword): HAL_SD_ErrorTypedef;
 var
   sdmmc_cmdinitstructure: SDMMC_CmdInitTypeDef;
   sdmmc_datainitstructure: SDMMC_DataInitTypeDef;
@@ -2487,7 +2455,7 @@ begin
   hsd.hdmatx^.XferErrorCallback := @SD_DMA_TxError;
 
   (* Enable the DMA Channel *)
-  HAL_DMA_Start_IT(hsd.hdmatx^, pWriteBuffer, @hsd.Instance^.FIFO, (BlockSize * NumberOfBlocks) shr 2);
+  HAL_DMA_Start_IT(hsd.hdmatx^, @pWriteBuffer, @hsd.Instance^.FIFO, (BlockSize * NumberOfBlocks) shr 2);
 
   (* Enable SDMMC DMA transfer *)
   __HAL_SD_SDMMC_DMA_ENABLE(hsd);
@@ -3283,13 +3251,9 @@ begin
 
   (* Find SD status according to card state*)
   if (cardstate = SD_CARD_TRANSFER) then
-  begin
-    exit(SD_TRANSFER_OK);
-  end
+    exit(SD_TRANSFER_OK)
   else if (cardstate = SD_CARD_ERROR) then
-  begin
-    exit(SD_TRANSFER_ERROR);
-  end
+    exit(SD_TRANSFER_ERROR)
   else
     exit(SD_TRANSFER_BUSY);
 end;

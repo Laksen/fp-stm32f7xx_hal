@@ -114,20 +114,29 @@ const
   * @brief  HAL State structures definition
    *)
 
-const
-  HAL_ETH_STATE_RESET = $00;  (*!< Peripheral not yet Initialized or disabled          *)
-  HAL_ETH_STATE_READY = $01;  (*!< Peripheral Initialized and ready for use            *)
-  HAL_ETH_STATE_BUSY = $02;  (*!< an internal process is ongoing                      *)
-  HAL_ETH_STATE_BUSY_TX = $12;  (*!< Data Transmission process is ongoing                *)
-  HAL_ETH_STATE_BUSY_RX = $22;  (*!< Data Reception process is ongoing                   *)
-  HAL_ETH_STATE_BUSY_TX_RX = $32;  (*!< Data Transmission and Reception process is ongoing  *)
-  HAL_ETH_STATE_BUSY_WR = $42;  (*!< Write process is ongoing                            *)
-  HAL_ETH_STATE_BUSY_RD = $82;  (*!< Read process is ongoing                             *)
-  HAL_ETH_STATE_TIMEOUT = $03;  (*!< Timeout state                                       *)
-  HAL_ETH_STATE_ERROR = $04;  (*!< Reception process is ongoing                        *)
-
 type
-  HAL_ETH_StateTypeDef = integer;
+  HAL_ETH_StateTypeDef = (HAL_ETH_STATE_RESET = $00,
+      (*!< Peripheral not yet Initialized or disabled          *)
+    HAL_ETH_STATE_READY = $01,
+      (*!< Peripheral Initialized and ready for use            *)
+    HAL_ETH_STATE_BUSY = $02,
+      (*!< an internal process is ongoing                      *)
+    HAL_ETH_STATE_BUSY_TX = $12,
+      (*!< Data Transmission process is ongoing                *)
+    HAL_ETH_STATE_BUSY_RX = $22,
+      (*!< Data Reception process is ongoing                   *)
+    HAL_ETH_STATE_BUSY_TX_RX = $32,
+      (*!< Data Transmission and Reception process is ongoing  *)
+    HAL_ETH_STATE_BUSY_WR = $42,
+      (*!< Write process is ongoing                            *)
+    HAL_ETH_STATE_BUSY_RD = $82,
+      (*!< Read process is ongoing                             *)
+    HAL_ETH_STATE_TIMEOUT = $03,
+      (*!< Timeout state                                       *)
+    HAL_ETH_STATE_ERROR =
+    $04  (*!< Reception process is ongoing                        *)
+  );
+
 
   (**
   * @brief  ETH Init Structure definition

@@ -182,8 +182,8 @@ function HAL_PCD_DevDisconnect(var hpcd: PCD_HandleTypeDef): HAL_StatusTypeDef;
 function HAL_PCD_SetAddress(var hpcd: PCD_HandleTypeDef; address: byte): HAL_StatusTypeDef;
 function HAL_PCD_EP_Open(var hpcd: PCD_HandleTypeDef; ep_addr: byte; ep_mps: word; ep_type: byte): HAL_StatusTypeDef;
 function HAL_PCD_EP_Close(var hpcd: PCD_HandleTypeDef; ep_addr: byte): HAL_StatusTypeDef;
-function HAL_PCD_EP_Receive(var hpcd: PCD_HandleTypeDef; ep_addr: byte; pBuf: Pbyte; len: longword): HAL_StatusTypeDef;
-function HAL_PCD_EP_Transmit(var hpcd: PCD_HandleTypeDef; ep_addr: byte; pBuf: Pbyte; len: longword): HAL_StatusTypeDef;
+function HAL_PCD_EP_Receive(var hpcd: PCD_HandleTypeDef; ep_addr: byte; var pBuf; len: longword): HAL_StatusTypeDef;
+function HAL_PCD_EP_Transmit(var hpcd: PCD_HandleTypeDef; ep_addr: byte; const pBuf; len: longword): HAL_StatusTypeDef;
 function HAL_PCD_EP_GetRxCount(var hpcd: PCD_HandleTypeDef; ep_addr: byte): word;
 function HAL_PCD_EP_SetStall(var hpcd: PCD_HandleTypeDef; ep_addr: byte): HAL_StatusTypeDef;
 function HAL_PCD_EP_ClrStall(var hpcd: PCD_HandleTypeDef; ep_addr: byte): HAL_StatusTypeDef;
@@ -632,7 +632,7 @@ begin
       end
       else if (((temp and USB_OTG_GRXSTSP_PKTSTS) shr 17) = STS_SETUP_UPDT) then
       begin
-        USB_ReadPacket(USBx^, @hpcd.Setup[0], 8);
+        USB_ReadPacket(USBx^, hpcd.Setup[0], 8);
         ep^.xfer_count := ep^.xfer_count + ((temp and USB_OTG_GRXSTSP_BCNT) shr 4);
       end;
       USB_UNMASK_INTERRUPT(hpcd.Instance^, USB_OTG_GINTSTS_RXFLVL);
@@ -810,21 +810,21 @@ begin
   exit(HAL_OK);
 end;
 
-function HAL_PCD_EP_Receive(var hpcd: PCD_HandleTypeDef; ep_addr: byte; pBuf: Pbyte; len: longword): HAL_StatusTypeDef;
+function HAL_PCD_EP_Receive(var hpcd: PCD_HandleTypeDef; ep_addr: byte; var pBuf; len: longword): HAL_StatusTypeDef;
 var
   ep: PPCD_EPTypeDef;
 begin
   ep := @hpcd.OUT_ep[ep_addr and $7F];
 
   (*setup and start the Xfer *)
-  ep^.xfer_buff := pBuf;
+  ep^.xfer_buff := @pBuf;
   ep^.xfer_len := len;
   ep^.xfer_count := 0;
   ep^.is_in := False;
   ep^.num := ep_addr and $7F;
 
   if hpcd.Init.dma_enable then
-    ep^.dma_addr := pBuf;
+    ep^.dma_addr := @pBuf;
 
   __HAL_Lock(hpcd.lock);
 
@@ -838,21 +838,21 @@ begin
   exit(HAL_OK);
 end;
 
-function HAL_PCD_EP_Transmit(var hpcd: PCD_HandleTypeDef; ep_addr: byte; pBuf: Pbyte; len: longword): HAL_StatusTypeDef;
+function HAL_PCD_EP_Transmit(var hpcd: PCD_HandleTypeDef; ep_addr: byte; const pBuf; len: longword): HAL_StatusTypeDef;
 var
   ep: PPCD_EPTypeDef;
 begin
   ep := @hpcd.IN_ep[ep_addr and $7F];
 
   (*setup and start the Xfer *)
-  ep^.xfer_buff := pBuf;
+  ep^.xfer_buff := @pBuf;
   ep^.xfer_len := len;
   ep^.xfer_count := 0;
   ep^.is_in := True;
   ep^.num := ep_addr and $7F;
 
   if hpcd.Init.dma_enable then
-    ep^.dma_addr := pBuf;
+    ep^.dma_addr := @pBuf;
 
   __HAL_Lock(hpcd.lock);
 
@@ -880,7 +880,7 @@ begin
   else
     ep := @hpcd.OUT_ep[ep_addr];
 
-  ep^.is_stall := 1;
+  ep^.is_stall := true;
   ep^.num := ep_addr and $7F;
   ep^.is_in := ((ep_addr and $80) = $80);
 
@@ -904,7 +904,7 @@ begin
   else
     ep := @hpcd.OUT_ep[ep_addr];
 
-  ep^.is_stall := 0;
+  ep^.is_stall := false;
   ep^.num := ep_addr and $7F;
   ep^.is_in := ((ep_addr and $80) = $80);
 

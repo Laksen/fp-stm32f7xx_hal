@@ -54,47 +54,44 @@ uses
   * @brief  USB Mode definition
    *)
 
-const
-  USB_OTG_DEVICE_MODE = 0;
-  USB_OTG_HOST_MODE = 1;
-  USB_OTG_DRD_MODE = 2;
-
 type
-  USB_OTG_ModeTypeDef = integer;
+  USB_OTG_ModeTypeDef = (
+    USB_OTG_DEVICE_MODE,
+    USB_OTG_HOST_MODE,
+    USB_OTG_DRD_MODE
+  );
 
   (**
   * @brief  URB States definition
    *)
 
-const
-  URB_IDLE = 0;
-  URB_DONE = 1;
-  URB_NOTREADY = 2;
-  URB_NYET = 3;
-  URB_ERROR = 4;
-  URB_STALL = 5;
-
-type
-  USB_OTG_URBStateTypeDef = integer;
+  USB_OTG_URBStateTypeDef = (
+    URB_IDLE,
+    URB_DONE,
+    URB_NOTREADY,
+    URB_NYET,
+    URB_ERROR,
+    URB_STALL
+  );
 
   (**
   * @brief  Host channel States  definition
    *)
 
-const
-  HC_IDLE = 0;
-  HC_XFRC = 1;
-  HC_HALTED = 2;
-  HC_NAK = 3;
-  HC_NYET = 4;
-  HC_STALL = 5;
-  HC_XACTERR = 6;
-  HC_BBLERR = 7;
-  HC_DATATGLERR = 8;
+  USB_OTG_HCStateTypeDef = (
+    HC_IDLE,
+    HC_XFRC,
+    HC_HALTED,
+    HC_NAK,
+    HC_NYET,
+    HC_STALL,
+    HC_XACTERR,
+    HC_BBLERR,
+    HC_DATATGLERR
+  );
+
 
 type
-  USB_OTG_HCStateTypeDef = integer;
-
   (**
   * @brief  PCD Initialization Structure definition
    *)
@@ -126,7 +123,7 @@ type
                                 This parameter must be a number between Min_Data = 1 and Max_Data = 15     *)
     is_in: boolean;  (*!< Endpoint direction
                                 This parameter must be a number between Min_Data = 0 and Max_Data = 1      *)
-    is_stall: byte;  (*!< Endpoint stall condition
+    is_stall: boolean;  (*!< Endpoint stall condition
                                 This parameter must be a number between Min_Data = 0 and Max_Data = 1      *)
     type_: byte;  (*!< Endpoint type
                                  This parameter can be any value of @ref USB_EP_Type_                      *)
@@ -151,7 +148,7 @@ type
                                 This parameter must be a number between Min_Data = 1 and Max_Data = 15      *)
     ep_num: byte;  (*!< Endpoint number.
                                 This parameter must be a number between Min_Data = 1 and Max_Data = 15      *)
-    ep_is_in: byte;  (*!< Endpoint direction
+    ep_is_in: boolean;  (*!< Endpoint direction
                                 This parameter must be a number between Min_Data = 0 and Max_Data = 1       *)
     speed: byte;  (*!< USB Host speed.
                                 This parameter can be any value of @ref USB_Core_Speed_                     *)
@@ -352,8 +349,8 @@ function USB_ActivateDedicatedEndpoint(var USBx: USB_OTG_GlobalTypeDef; var ep: 
 function USB_DeactivateDedicatedEndpoint(var USBx: USB_OTG_GlobalTypeDef; var ep: USB_OTG_EPTypeDef): HAL_StatusTypeDef;
 function USB_EPStartXfer(var USBx: USB_OTG_GlobalTypeDef; var ep: USB_OTG_EPTypeDef; dma: boolean): HAL_StatusTypeDef;
 function USB_EP0StartXfer(var USBx: USB_OTG_GlobalTypeDef; var ep: USB_OTG_EPTypeDef; dma: boolean): HAL_StatusTypeDef;
-function USB_WritePacket(var USBx: USB_OTG_GlobalTypeDef; src: Pbyte; ch_ep_num: byte; len: word; dma: boolean): HAL_StatusTypeDef;
-function USB_ReadPacket(var USBx: USB_OTG_GlobalTypeDef; dest: Pbyte; len: word): pointer;
+function USB_WritePacket(var USBx: USB_OTG_GlobalTypeDef; const src; ch_ep_num: byte; len: word; dma: boolean): HAL_StatusTypeDef;
+function USB_ReadPacket(var USBx: USB_OTG_GlobalTypeDef; var dest; len: word): pointer;
 function USB_EPSetStall(var USBx: USB_OTG_GlobalTypeDef; var ep: USB_OTG_EPTypeDef): HAL_StatusTypeDef;
 function USB_EPClearStall(var USBx: USB_OTG_GlobalTypeDef; var ep: USB_OTG_EPTypeDef): HAL_StatusTypeDef;
 function USB_SetDevAddress(var USBx: USB_OTG_GlobalTypeDef; address: byte): HAL_StatusTypeDef;
@@ -945,36 +942,42 @@ begin
   exit(HAL_OK);
 end;
 
-function USB_WritePacket(var USBx: USB_OTG_GlobalTypeDef; src: Pbyte; ch_ep_num: byte; len: word; dma: boolean): HAL_StatusTypeDef;
+function USB_WritePacket(var USBx: USB_OTG_GlobalTypeDef; const src; ch_ep_num: byte; len: word; dma: boolean): HAL_StatusTypeDef;
 var
   i, count32b: longword;
+  srcPtr: pbyte;
 begin
+  srcPtr:=@src;
+
   if (not dma) then
   begin
     count32b := (len + 3) div 4;
     for i := 0 to count32b - 1 do
     begin
-      USBx_DFIFO(usbx,ch_ep_num)^ := plongword(unaligned(src))^;
-      Inc(src, 4);
+      USBx_DFIFO(usbx,ch_ep_num)^ := plongword(unaligned(srcPtr))^;
+      Inc(srcPtr, 4);
     end;
   end;
 
   exit(HAL_OK);
 end;
 
-function USB_ReadPacket(var USBx: USB_OTG_GlobalTypeDef; dest: Pbyte; len: word): pointer;
+function USB_ReadPacket(var USBx: USB_OTG_GlobalTypeDef; var dest; len: word): pointer;
 var
   i, count32b: longword;
+  destPtr: pbyte;
 begin
+  destPtr:=@dest;
+
   count32b := (len + 3) div 4;
 
   for i := 0 to count32b - 1 do
   begin
-    plongword(unaligned(dest))^ := USBx_DFIFO(usbx,0)^;
-    Inc(dest, 4);
+    plongword(unaligned(destPtr))^ := USBx_DFIFO(usbx,0)^;
+    Inc(destPtr, 4);
   end;
 
-  exit(dest);
+  exit(destPtr);
 end;
 
 function USB_EPSetStall(var USBx: USB_OTG_GlobalTypeDef; var ep: USB_OTG_EPTypeDef): HAL_StatusTypeDef;
@@ -1387,7 +1390,7 @@ begin
   else
     num_packets := 1;
 
-  if (hc.ep_is_in <> 0) then
+  if (hc.ep_is_in) then
     hc.xfer_len := num_packets * hc.max_packet;
 
   (* Initialize the HCTSIZn register *)
@@ -1409,7 +1412,7 @@ begin
 
   if (not dma) (* Slave mode *) then
   begin
-    if ((hc.ep_is_in = 0) and (hc.xfer_len > 0)) then
+    if ((not hc.ep_is_in) and (hc.xfer_len > 0)) then
     begin
       case hc.ep_type of
         (* Non periodic transfer *)

@@ -112,17 +112,15 @@ type
   (**
     * @brief  HAL DMA2D State structures definition
      *)
-
-const
-  HAL_DMA2D_STATE_RESET = $00;  (*!< DMA2D not yet initialized or disabled        *)
-  HAL_DMA2D_STATE_READY = $01;  (*!< Peripheral Initialized and ready for use     *)
-  HAL_DMA2D_STATE_BUSY = $02;  (*!< an internal process is ongoing               *)
-  HAL_DMA2D_STATE_TIMEOUT = $03;  (*!< Timeout state                                *)
-  HAL_DMA2D_STATE_ERROR = $04;  (*!< DMA2D state error                            *)
-  HAL_DMA2D_STATE_SUSPEND = $05;  (*!< DMA2D process is suspended                   *)
-
 type
-  HAL_DMA2D_StateTypeDef = integer;
+  HAL_DMA2D_StateTypeDef = (
+    HAL_DMA2D_STATE_RESET,  (*!< DMA2D not yet initialized or disabled        *)
+    HAL_DMA2D_STATE_READY,  (*!< Peripheral Initialized and ready for use     *)
+    HAL_DMA2D_STATE_BUSY,   (*!< an internal process is ongoing               *)
+    HAL_DMA2D_STATE_TIMEOUT,(*!< Timeout state                                *)
+    HAL_DMA2D_STATE_ERROR,  (*!< DMA2D state error                            *)
+    HAL_DMA2D_STATE_SUSPEND (*!< DMA2D process is suspended                   *)
+  );
 
   (**
     * @brief  DMA2D handle Structure definition

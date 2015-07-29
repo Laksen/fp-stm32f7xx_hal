@@ -111,33 +111,29 @@ type
   (**
   * @brief  HAL DMA State structures definition
    *)
-
-const
-  HAL_DMA_STATE_RESET      = $00;  (*!< DMA not yet initialized or disabled  *)
-  HAL_DMA_STATE_READY      = $01;  (*!< DMA initialized and ready for use    *)
-  HAL_DMA_STATE_READY_MEM0 = $11;  (*!< DMA Mem0 process success             *)
-  HAL_DMA_STATE_READY_MEM1 = $21;  (*!< DMA Mem1 process success             *)
-  HAL_DMA_STATE_READY_HALF_MEM0 = $31;  (*!< DMA Mem0 Half process success        *)
-  HAL_DMA_STATE_READY_HALF_MEM1 = $41;  (*!< DMA Mem1 Half process success        *)
-  HAL_DMA_STATE_BUSY       = $02;  (*!< DMA process is ongoing               *)
-  HAL_DMA_STATE_BUSY_MEM0  = $12;  (*!< DMA Mem0 process is ongoing          *)
-  HAL_DMA_STATE_BUSY_MEM1  = $22;  (*!< DMA Mem1 process is ongoing          *)
-  HAL_DMA_STATE_TIMEOUT    = $03;  (*!< DMA timeout state                    *)
-  HAL_DMA_STATE_ERROR      = $04;  (*!< DMA error state                      *)
-
 type
-  HAL_DMA_StateTypeDef = integer;
+  HAL_DMA_StateTypeDef = (
+    HAL_DMA_STATE_RESET = $00,(*!< DMA not yet initialized or disabled  *)
+    HAL_DMA_STATE_READY = $01,  (*!< DMA initialized and ready for use    *)
+    HAL_DMA_STATE_READY_MEM0 = $11,(*!< DMA Mem0 process success             *)
+    HAL_DMA_STATE_READY_MEM1 = $21,(*!< DMA Mem1 process success             *)
+    HAL_DMA_STATE_READY_HALF_MEM0 = $31,(*!< DMA Mem0 Half process success        *)
+    HAL_DMA_STATE_READY_HALF_MEM1 = $41, (*!< DMA Mem1 Half process success        *)
+    HAL_DMA_STATE_BUSY = $02,  (*!< DMA process is ongoing               *)
+    HAL_DMA_STATE_BUSY_MEM0 = $12,  (*!< DMA Mem0 process is ongoing          *)
+    HAL_DMA_STATE_BUSY_MEM1 = $22,  (*!< DMA Mem1 process is ongoing          *)
+    HAL_DMA_STATE_TIMEOUT = $03,  (*!< DMA timeout state                    *)
+    HAL_DMA_STATE_ERROR = $04  (*!< DMA error state                      *)
+  );
 
   (**
   * @brief  HAL DMA Error Code structure definition
    *)
-
-const
-  HAL_DMA_FULL_TRANSFER = $00;  (*!< Full transfer      *)
-  HAL_DMA_HALF_TRANSFER = $01;  (*!< Half Transfer      *)
-
 type
-  HAL_DMA_LevelCompleteTypeDef = integer;
+  HAL_DMA_LevelCompleteTypeDef = (
+    HAL_DMA_FULL_TRANSFER, (*!< Full transfer      *)
+    HAL_DMA_HALF_TRANSFER (*!< Half Transfer      *)
+  );
 
   (**
   * @brief  DMA handle Structure definition
@@ -394,7 +390,7 @@ function HAL_DMA_DeInit(var hdma: DMA_HandleTypeDef): HAL_StatusTypeDef;
 function HAL_DMA_Start(var hdma: DMA_HandleTypeDef; SrcAddress, DstAddress: pointer; DataLength: longword): HAL_StatusTypeDef;
 function HAL_DMA_Start_IT(var hdma: DMA_HandleTypeDef; SrcAddress, DstAddress: pointer; DataLength: longword): HAL_StatusTypeDef;
 function HAL_DMA_Abort(var hdma: DMA_HandleTypeDef): HAL_StatusTypeDef;
-function HAL_DMA_PollForTransfer(var hdma: DMA_HandleTypeDef; CompleteLevel, Timeout: longword): HAL_StatusTypeDef;
+function HAL_DMA_PollForTransfer(var hdma: DMA_HandleTypeDef; CompleteLevel: HAL_DMA_LevelCompleteTypeDef; Timeout: longword): HAL_StatusTypeDef;
 procedure HAL_DMA_IRQHandler(var hdma: DMA_HandleTypeDef);
 
 (**
@@ -869,7 +865,7 @@ function HAL_DMA_Abort(var hdma: DMA_HandleTypeDef): HAL_StatusTypeDef;
     exit(HAL_OK);
   end;
 
-function HAL_DMA_PollForTransfer(var hdma: DMA_HandleTypeDef; CompleteLevel, Timeout: longword): HAL_StatusTypeDef;
+function HAL_DMA_PollForTransfer(var hdma: DMA_HandleTypeDef; CompleteLevel: HAL_DMA_LevelCompleteTypeDef; Timeout: longword): HAL_StatusTypeDef;
   var
     tmp, tmp1, tmp2: boolean;
     temp, tickstart: longword;

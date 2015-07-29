@@ -76,39 +76,30 @@ type
                                   This parameter can be a value of @ref I2C_nostretch_mode  *)
   end;
 
-  (**
-  * @end
-   *)
-
-  (** @defgroup HAL_state_structure_definition HAL state structure definition
-  * @brief  HAL State structure definition
-  * @begin
-   *)
-
-const
-  HAL_I2C_STATE_RESET       = $00;  (*!< I2C not yet initialized or disabled          *)
-  HAL_I2C_STATE_READY       = $01;  (*!< I2C initialized and ready for use            *)
-  HAL_I2C_STATE_BUSY        = $02;  (*!< I2C internal process is ongoing              *)
-  HAL_I2C_STATE_MASTER_BUSY_TX = $12;  (*!< Master Data Transmission process is ongoing  *)
-  HAL_I2C_STATE_MASTER_BUSY_RX = $22;  (*!< Master Data Reception process is ongoing     *)
-  HAL_I2C_STATE_SLAVE_BUSY_TX = $32;  (*!< Slave Data Transmission process is ongoing   *)
-  HAL_I2C_STATE_SLAVE_BUSY_RX = $42;  (*!< Slave Data Reception process is ongoing      *)
-  HAL_I2C_STATE_MEM_BUSY_TX = $52;  (*!< Memory Data Transmission process is ongoing  *)
-  HAL_I2C_STATE_MEM_BUSY_RX = $62;  (*!< Memory Data Reception process is ongoing     *)
-  HAL_I2C_STATE_TIMEOUT     = $03;  (*!< Timeout state                                *)
-  HAL_I2C_STATE_ERROR       = $04;  (*!< Reception process is ongoing                 *)
-
-type
-  HAL_I2C_StateTypeDef = integer;
-
-  (**
-  * @end
-   *)
-
-  (** @defgroup I2C_Error_Code_definition I2C Error Code definition
-  * @brief  I2C Error Code definition
-  * @begin
-   *)
+  HAL_I2C_StateTypeDef = (
+    HAL_I2C_STATE_RESET = $00,
+      (*!< I2C not yet initialized or disabled          *)
+    HAL_I2C_STATE_READY = $01,
+      (*!< I2C initialized and ready for use            *)
+    HAL_I2C_STATE_BUSY = $02,
+      (*!< I2C internal process is ongoing              *)
+    HAL_I2C_STATE_MASTER_BUSY_TX = $12,
+      (*!< Master Data Transmission process is ongoing  *)
+    HAL_I2C_STATE_MASTER_BUSY_RX = $22,
+      (*!< Master Data Reception process is ongoing     *)
+    HAL_I2C_STATE_SLAVE_BUSY_TX = $32,
+      (*!< Slave Data Transmission process is ongoing   *)
+    HAL_I2C_STATE_SLAVE_BUSY_RX = $42,
+      (*!< Slave Data Reception process is ongoing      *)
+    HAL_I2C_STATE_MEM_BUSY_TX = $52,
+      (*!< Memory Data Transmission process is ongoing  *)
+    HAL_I2C_STATE_MEM_BUSY_RX = $62,
+      (*!< Memory Data Reception process is ongoing     *)
+    HAL_I2C_STATE_TIMEOUT = $03,
+      (*!< Timeout state                                *)
+    HAL_I2C_STATE_ERROR =
+    $04  (*!< Reception process is ongoing                 *)
+  );
 
 const
   HAL_I2C_ERROR_NONE    = ($00000000);  (*!< No error               *)
@@ -119,14 +110,6 @@ const
   HAL_I2C_ERROR_DMA     = ($00000010);  (*!< DMA transfer error     *)
   HAL_I2C_ERROR_TIMEOUT = ($00000020);  (*!< Timeout error          *)
   HAL_I2C_ERROR_SIZE    = ($00000040);  (*!< Size Management error  *)
-  (**
-  * @end
-   *)
-
-  (** @defgroup I2C_handle_Structure_definition I2C handle Structure definition
-  * @brief  I2C handle Structure definition
-  * @begin
-   *)
 
 type
   PI2C_HandleTypeDef = ^I2C_HandleTypeDef;
@@ -144,44 +127,12 @@ type
     ErrorCode: longword;  (*!< I2C Error code                    *)
   end;
 
-  (**
-  * @end
-   *)
-
-  (**
-  * @end
-   *)
-
-(* Exported constants -------------------------------------------------------- *)
-
-  (** @defgroup I2C_Exported_Constants I2C Exported Constants
-  * @begin
-   *)
-
-  (** @defgroup I2C_addressing_mode I2C addressing mode
-  * @begin
-   *)
-
 const
   I2C_ADDRESSINGMODE_7BIT  = ($00000001);
   I2C_ADDRESSINGMODE_10BIT = ($00000002);
-  (**
-  * @end
-   *)
-
-  (** @defgroup I2C_dual_addressing_mode I2C dual addressing mode
-  * @begin
-   *)
 
   I2C_DUALADDRESS_DISABLE = ($00000000);
   I2C_DUALADDRESS_ENABLE  = I2C_OAR2_OA2EN;
-  (**
-  * @end
-   *)
-
-  (** @defgroup I2C_own_address2_masks I2C own address2 masks
-  * @begin
-   *)
 
   I2C_OA2_NOMASK = ($00);
   I2C_OA2_MASK01 = ($01);
@@ -191,69 +142,24 @@ const
   I2C_OA2_MASK05 = ($05);
   I2C_OA2_MASK06 = ($06);
   I2C_OA2_MASK07 = ($07);
-  (**
-  * @end
-   *)
-
-  (** @defgroup I2C_general_call_addressing_mode I2C general call addressing mode
-  * @begin
-   *)
 
   I2C_GENERALCALL_DISABLE = ($00000000);
   I2C_GENERALCALL_ENABLE  = I2C_CR1_GCEN;
-  (**
-  * @end
-   *)
-
-  (** @defgroup I2C_nostretch_mode I2C nostretch mode
-  * @begin
-   *)
 
   I2C_NOSTRETCH_DISABLE = ($00000000);
   I2C_NOSTRETCH_ENABLE  = I2C_CR1_NOSTRETCH;
-  (**
-  * @end
-   *)
-
-  (** @defgroup I2C_Memory_Address_Size I2C Memory Address Size
-  * @begin
-   *)
 
   I2C_MEMADD_SIZE_8BIT  = ($00000001);
   I2C_MEMADD_SIZE_16BIT = ($00000002);
-  (**
-  * @end
-   *)
-
-  (** @defgroup I2C_ReloadEndMode_definition I2C ReloadEndMode definition
-  * @begin
-   *)
 
   I2C_RELOAD_MODE  = I2C_CR2_RELOAD;
   I2C_AUTOEND_MODE = I2C_CR2_AUTOEND;
   I2C_SOFTEND_MODE = ($00000000);
-  (**
-  * @end
-   *)
-
-  (** @defgroup I2C_StartStopMode_definition I2C StartStopMode definition
-  * @begin
-   *)
 
   I2C_NO_STARTSTOP        = ($00000000);
   I2C_GENERATE_STOP       = I2C_CR2_STOP;
   I2C_GENERATE_START_READ = (I2C_CR2_START or I2C_CR2_RD_WRN);
   I2C_GENERATE_START_WRITE = I2C_CR2_START;
-  (**
-  * @end
-   *)
-
-  (** @defgroup I2C_Interrupt_configuration_definition I2C Interrupt configuration definition
-  * @brief I2C Interrupt definition
-  *        Elements values convention: $XXXXXXXX
-  *           - XXXXXXXX  : Interrupt control mask
-  * @begin
-   *)
 
   I2C_IT_ERRI  = I2C_CR1_ERRIE;
   I2C_IT_TCI   = I2C_CR1_TCIE;
@@ -262,13 +168,6 @@ const
   I2C_IT_ADDRI = I2C_CR1_ADDRIE;
   I2C_IT_RXI   = I2C_CR1_RXIE;
   I2C_IT_TXI   = I2C_CR1_TXIE;
-  (**
-  * @end
-   *)
-
-  (** @defgroup I2C_Flag_definition I2C Flag definition
-  * @begin
-   *)
 
   I2C_FLAG_TXE     = I2C_ISR_TXE;
   I2C_FLAG_TXIS    = I2C_ISR_TXIS;
