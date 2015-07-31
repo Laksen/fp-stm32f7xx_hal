@@ -118,7 +118,7 @@ type
   PADC_HandleTypeDef = ^ADC_HandleTypeDef;
 
   ADC_HandleTypeDef = record
-    Instance: ^TADC1_Registers;  (*!< Register base address  *)
+    Instance: ^ADC_TypeDef;  (*!< Register base address  *)
     Init: ADC_InitTypeDef;  (*!< ADC required parameters  *)
     NbrOfCurrentConversionRank: longword;  (*!< ADC number of current conversion rank  *)
     DMA_Handle: ^__DMA_HandleTypeDef;  (*!< Pointer DMA Handler  *)
@@ -634,8 +634,8 @@ procedure ADC_Init(var hadc: ADC_HandleTypeDef);
 begin
   (* Set ADC parameters *)
   (* Set the ADC clock prescaler *)
-  C_ADC.CCR := C_ADC.CCR and (not (ADC_CCR_ADCPRE));
-  C_ADC.CCR := C_ADC.CCR or hadc.Init.ClockPrescaler;
+  ADC.CCR := ADC.CCR and (not (ADC_CCR_ADCPRE));
+  ADC.CCR := ADC.CCR or hadc.Init.ClockPrescaler;
 
   (* Set ADC scan mode *)
   hadc.Instance^.CR1 := hadc.Instance^.CR1 and (not (ADC_CR1_SCAN));
@@ -799,7 +799,7 @@ begin
   __HAL_UNLOCK(hadc.lock);
 
   (* Check if Multimode enabled *)
-  if HAL_IS_BIT_CLR(C_ADC.CCR, ADC_CCR_MULTI) then
+  if HAL_IS_BIT_CLR(ADC.CCR, ADC_CCR_MULTI) then
   begin
     (* if no external trigger present enable software conversion of regular channels *)
     if (hadc.Instance^.CR2 and ADC_CR2_EXTEN) = 0 then
@@ -989,7 +989,7 @@ begin
   __HAL_UNLOCK(hadc.lock);
 
   (* Check if Multimode enabled *)
-  if HAL_IS_BIT_CLR(C_ADC.CCR, ADC_CCR_MULTI) then
+  if HAL_IS_BIT_CLR(ADC.CCR, ADC_CCR_MULTI) then
   begin
     (* if no external trigger present enable software conversion of regular channels *)
     if (hadc.Instance^.CR2 and ADC_CR2_EXTEN) = 0 then
@@ -1365,14 +1365,14 @@ begin
   if ((hadc.Instance = @ADC1) and (sConfig.Channel = ADC_CHANNEL_VBAT)) then
   begin
     (* Enable the VBAT channel*)
-    C_ADC.CCR := C_ADC.CCR or ADC_CCR_VBATE;
+    ADC.CCR := ADC.CCR or ADC_CCR_VBATE;
   end;
 
   (* if ADC1 Channel_16 or Channel_17 is selected enable TSVREFE Channel(Temperature sensor and VREFINT) *)
   if ((hadc.Instance = @ADC1) and ((sConfig.Channel = ADC_CHANNEL_TEMPSENSOR) or (sConfig.Channel = ADC_CHANNEL_VREFINT))) then
   begin
     (* Enable the TSVREFE channel*)
-    C_ADC.CCR := C_ADC.CCR or ADC_CCR_TSVREFE;
+    ADC.CCR := ADC.CCR or ADC_CCR_TSVREFE;
 
     if (sConfig.Channel = ADC_CHANNEL_TEMPSENSOR) then
     begin

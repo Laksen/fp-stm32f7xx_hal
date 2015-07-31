@@ -5717,9 +5717,8 @@ end;
   *)
 procedure __HAL_RCC_TIMCLKPRESCALER(__PRESC__: longword);
 begin
-  RCC.DKCFGR1 := RCC.DKCFGR1 and (not (RCC_DCKCFGR1_TIMPRE));
-  RCC.DKCFGR1 := RCC.DKCFGR1 or (__PRESC__);
-
+  RCC.DCKCFGR1 := RCC.DCKCFGR1 and (not (RCC_DCKCFGR1_TIMPRE));
+  RCC.DCKCFGR1 := RCC.DCKCFGR1 or (__PRESC__);
 end;
 
 (** @brief Macros to Enable or Disable the PLLISAI.
@@ -5785,7 +5784,7 @@ end;
   *)
 procedure __HAL_RCC_PLLI2S_PLLSAICLKDIVQ_CONFIG(__PLLI2SDivQ__: longword);
 begin
-  RCC.DKCFGR1 := (RCC.DKCFGR1 and (not longword(RCC_DCKCFGR1_PLLI2SDIVQ))) or (__PLLI2SDivQ__) - 1;
+  RCC.DCKCFGR1 := (RCC.DCKCFGR1 and (not longword(RCC_DCKCFGR1_PLLI2SDIVQ))) or (__PLLI2SDivQ__) - 1;
 end;
 
 (** @brief  Macro to configure the SAI clock Divider coming from PLLSAI.
@@ -5796,7 +5795,7 @@ end;
   *)
 procedure __HAL_RCC_PLLSAI_PLLSAICLKDIVQ_CONFIG(__PLLSAIDivQ__: longword);
 begin
-  RCC.DKCFGR1 := (RCC.DKCFGR1 and (not longword(RCC_DCKCFGR1_PLLSAIDIVQ))) or ((__PLLSAIDivQ__) - 1) shl 8;
+  RCC.DCKCFGR1 := (RCC.DCKCFGR1 and (not longword(RCC_DCKCFGR1_PLLSAIDIVQ))) or ((__PLLSAIDivQ__) - 1) shl 8;
 end;
 
 (** @brief  Macro to configure the LTDC clock Divider coming from PLLSAI.
@@ -5809,7 +5808,7 @@ end;
 procedure __HAL_RCC_PLLSAI_PLLSAICLKDIVR_CONFIG(__PLLSAIDivR__: longword);
 begin
 
-  RCC.DKCFGR1 := (RCC.DKCFGR1 and (not longword(RCC_DCKCFGR1_PLLSAIDIVR))) or (__PLLSAIDivR__);
+  RCC.DCKCFGR1 := (RCC.DCKCFGR1 and (not longword(RCC_DCKCFGR1_PLLSAIDIVR))) or (__PLLSAIDivR__);
 end;
 
 (** @brief  Macro to configure SAI1 clock source selection.
@@ -5827,7 +5826,7 @@ end;
 procedure __HAL_RCC_SAI1_CONFIG(__SOURCE__: longword);
 begin
 
-  RCC.DKCFGR1 := (RCC.DKCFGR1 and (not longword(RCC_DCKCFGR1_SAI1SEL))) or (__SOURCE__);
+  RCC.DCKCFGR1 := (RCC.DCKCFGR1 and (not longword(RCC_DCKCFGR1_SAI1SEL))) or (__SOURCE__);
 end;
 
 (** @brief  Macro to get the SAI1 clock source.
@@ -5841,7 +5840,7 @@ end;
   *)
 function __HAL_RCC_GET_SAI1_SOURCE: longword;
 begin
-  exit((((RCC.DKCFGR1 and RCC_DCKCFGR1_SAI1SEL))));
+  exit((((RCC.DCKCFGR1 and RCC_DCKCFGR1_SAI1SEL))));
 end;
 
 
@@ -5860,7 +5859,7 @@ end;
 procedure __HAL_RCC_SAI2_CONFIG(__SOURCE__: longword);
 begin
 
-  RCC.DKCFGR1 := (RCC.DKCFGR1 and (not longword(RCC_DCKCFGR1_SAI2SEL))) or (__SOURCE__);
+  RCC.DCKCFGR1 := (RCC.DCKCFGR1 and (not longword(RCC_DCKCFGR1_SAI2SEL))) or (__SOURCE__);
 end;
 
 
@@ -5875,7 +5874,7 @@ end;
   *)
 function __HAL_RCC_GET_SAI2_SOURCE: longword;
 begin
-  exit((((RCC.DKCFGR1 and RCC_DCKCFGR1_SAI2SEL))));
+  exit((((RCC.DCKCFGR1 and RCC_DCKCFGR1_SAI2SEL))));
 end;
 
 
@@ -5937,7 +5936,7 @@ end;
 procedure __HAL_RCC_I2C1_CONFIG(__I2C1_CLKSOURCE__: longword);
 begin
 
-  RCC.DKCFGR2 := (RCC.DKCFGR2 and (not longword(RCC_DCKCFGR2_I2C1SEL))) or (__I2C1_CLKSOURCE__);
+  RCC.DCKCFGR2 := (RCC.DCKCFGR2 and (not longword(RCC_DCKCFGR2_I2C1SEL))) or (__I2C1_CLKSOURCE__);
 end;
 
 (** @brief  Macro to get the I2C1 clock source.
@@ -5948,7 +5947,7 @@ end;
   *)
 function __HAL_RCC_GET_I2C1_SOURCE: longword;
 begin
-  exit((((RCC.DKCFGR2 and RCC_DCKCFGR2_I2C1SEL))));
+  exit((((RCC.DCKCFGR2 and RCC_DCKCFGR2_I2C1SEL))));
 end;
 
 (** @brief  Macro to configure the I2C2 clock (I2C2CLK).
@@ -5962,7 +5961,7 @@ end;
 procedure __HAL_RCC_I2C2_CONFIG(__I2C2_CLKSOURCE__: longword);
 begin
 
-  RCC.DKCFGR2 := (RCC.DKCFGR2 and (not longword(RCC_DCKCFGR2_I2C2SEL))) or (__I2C2_CLKSOURCE__);
+  RCC.DCKCFGR2 := (RCC.DCKCFGR2 and (not longword(RCC_DCKCFGR2_I2C2SEL))) or (__I2C2_CLKSOURCE__);
 end;
 
 (** @brief  Macro to get the I2C2 clock source.
@@ -5973,7 +5972,7 @@ end;
   *)
 function __HAL_RCC_GET_I2C2_SOURCE: longword;
 begin
-  exit((((RCC.DKCFGR2 and RCC_DCKCFGR2_I2C2SEL))));
+  exit((((RCC.DCKCFGR2 and RCC_DCKCFGR2_I2C2SEL))));
 end;
 
 (** @brief  Macro to configure the I2C3 clock (I2C3CLK).
@@ -5987,7 +5986,7 @@ end;
 procedure __HAL_RCC_I2C3_CONFIG(__I2C3_CLKSOURCE__: longword);
 begin
 
-  RCC.DKCFGR2 := (RCC.DKCFGR2 and (not longword(RCC_DCKCFGR2_I2C3SEL))) or (__I2C3_CLKSOURCE__);
+  RCC.DCKCFGR2 := (RCC.DCKCFGR2 and (not longword(RCC_DCKCFGR2_I2C3SEL))) or (__I2C3_CLKSOURCE__);
 end;
 
 (** @brief  macro to get the I2C3 clock source.
@@ -5998,7 +5997,7 @@ end;
   *)
 function __HAL_RCC_GET_I2C3_SOURCE: longword;
 begin
-  exit((((RCC.DKCFGR2 and RCC_DCKCFGR2_I2C3SEL))));
+  exit((((RCC.DCKCFGR2 and RCC_DCKCFGR2_I2C3SEL))));
 end;
 
 (** @brief  Macro to configure the I2C4 clock (I2C4CLK).
@@ -6012,7 +6011,7 @@ end;
 procedure __HAL_RCC_I2C4_CONFIG(__I2C4_CLKSOURCE__: longword);
 begin
 
-  RCC.DKCFGR2 := (RCC.DKCFGR2 and (not longword(RCC_DCKCFGR2_I2C4SEL))) or (__I2C4_CLKSOURCE__);
+  RCC.DCKCFGR2 := (RCC.DCKCFGR2 and (not longword(RCC_DCKCFGR2_I2C4SEL))) or (__I2C4_CLKSOURCE__);
 end;
 
 (** @brief  macro to get the I2C4 clock source.
@@ -6023,7 +6022,7 @@ end;
   *)
 function __HAL_RCC_GET_I2C4_SOURCE: longword;
 begin
-  exit((((RCC.DKCFGR2 and RCC_DCKCFGR2_I2C4SEL))));
+  exit((((RCC.DCKCFGR2 and RCC_DCKCFGR2_I2C4SEL))));
 end;
 
 (** @brief  Macro to configure the USART1 clock (USART1CLK).
@@ -6038,7 +6037,7 @@ end;
 procedure __HAL_RCC_USART1_CONFIG(__USART1_CLKSOURCE__: longword);
 begin
 
-  RCC.DKCFGR2 := (RCC.DKCFGR2 and (not longword(RCC_DCKCFGR2_USART1SEL))) or (__USART1_CLKSOURCE__);
+  RCC.DCKCFGR2 := (RCC.DCKCFGR2 and (not longword(RCC_DCKCFGR2_USART1SEL))) or (__USART1_CLKSOURCE__);
 end;
 
 (** @brief  macro to get the USART1 clock source.
@@ -6050,7 +6049,7 @@ end;
   *)
 function __HAL_RCC_GET_USART1_SOURCE: longword;
 begin
-  exit((((RCC.DKCFGR2 and RCC_DCKCFGR2_USART1SEL))));
+  exit((((RCC.DCKCFGR2 and RCC_DCKCFGR2_USART1SEL))));
 end;
 
 (** @brief  Macro to configure the USART2 clock (USART2CLK).
@@ -6065,7 +6064,7 @@ end;
 procedure __HAL_RCC_USART2_CONFIG(__USART2_CLKSOURCE__: longword);
 begin
 
-  RCC.DKCFGR2 := (RCC.DKCFGR2 and (not longword(RCC_DCKCFGR2_USART2SEL))) or (__USART2_CLKSOURCE__);
+  RCC.DCKCFGR2 := (RCC.DCKCFGR2 and (not longword(RCC_DCKCFGR2_USART2SEL))) or (__USART2_CLKSOURCE__);
 end;
 
 (** @brief  macro to get the USART2 clock source.
@@ -6077,7 +6076,7 @@ end;
   *)
 function __HAL_RCC_GET_USART2_SOURCE: longword;
 begin
-  exit((((RCC.DKCFGR2 and RCC_DCKCFGR2_USART2SEL))));
+  exit((((RCC.DCKCFGR2 and RCC_DCKCFGR2_USART2SEL))));
 end;
 
 (** @brief  Macro to configure the USART3 clock (USART3CLK).
@@ -6092,7 +6091,7 @@ end;
 procedure __HAL_RCC_USART3_CONFIG(__USART3_CLKSOURCE__: longword);
 begin
 
-  RCC.DKCFGR2 := (RCC.DKCFGR2 and (not longword(RCC_DCKCFGR2_USART3SEL))) or (__USART3_CLKSOURCE__);
+  RCC.DCKCFGR2 := (RCC.DCKCFGR2 and (not longword(RCC_DCKCFGR2_USART3SEL))) or (__USART3_CLKSOURCE__);
 end;
 
 (** @brief  macro to get the USART3 clock source.
@@ -6104,7 +6103,7 @@ end;
   *)
 function __HAL_RCC_GET_USART3_SOURCE: longword;
 begin
-  exit((((RCC.DKCFGR2 and RCC_DCKCFGR2_USART3SEL))));
+  exit((((RCC.DCKCFGR2 and RCC_DCKCFGR2_USART3SEL))));
 end;
 
  (** @brief  Macro to configure the UART4 clock (UART4CLK).
@@ -6119,7 +6118,7 @@ end;
 procedure __HAL_RCC_UART4_CONFIG(__UART4_CLKSOURCE__: longword);
 begin
 
-  RCC.DKCFGR2 := (RCC.DKCFGR2 and (not longword(RCC_DCKCFGR2_UART4SEL))) or (__UART4_CLKSOURCE__);
+  RCC.DCKCFGR2 := (RCC.DCKCFGR2 and (not longword(RCC_DCKCFGR2_UART4SEL))) or (__UART4_CLKSOURCE__);
 end;
 
 (** @brief  macro to get the UART4 clock source.
@@ -6131,7 +6130,7 @@ end;
   *)
 function __HAL_RCC_GET_UART4_SOURCE: longword;
 begin
-  exit((((RCC.DKCFGR2 and RCC_DCKCFGR2_UART4SEL))));
+  exit((((RCC.DCKCFGR2 and RCC_DCKCFGR2_UART4SEL))));
 end;
 
  (** @brief  Macro to configure the UART5 clock (UART5CLK).
@@ -6146,7 +6145,7 @@ end;
 procedure __HAL_RCC_UART5_CONFIG(__UART5_CLKSOURCE__: longword);
 begin
 
-  RCC.DKCFGR2 := (RCC.DKCFGR2 and (not longword(RCC_DCKCFGR2_UART5SEL))) or (__UART5_CLKSOURCE__);
+  RCC.DCKCFGR2 := (RCC.DCKCFGR2 and (not longword(RCC_DCKCFGR2_UART5SEL))) or (__UART5_CLKSOURCE__);
 end;
 
 (** @brief  macro to get the UART5 clock source.
@@ -6158,7 +6157,7 @@ end;
   *)
 function __HAL_RCC_GET_UART5_SOURCE: longword;
 begin
-  exit((((RCC.DKCFGR2 and RCC_DCKCFGR2_UART5SEL))));
+  exit((((RCC.DCKCFGR2 and RCC_DCKCFGR2_UART5SEL))));
 end;
 
  (** @brief  Macro to configure the USART6 clock (USART6CLK).
@@ -6173,7 +6172,7 @@ end;
 procedure __HAL_RCC_USART6_CONFIG(__USART6_CLKSOURCE__: longword);
 begin
 
-  RCC.DKCFGR2 := (RCC.DKCFGR2 and (not longword(RCC_DCKCFGR2_USART6SEL))) or (__USART6_CLKSOURCE__);
+  RCC.DCKCFGR2 := (RCC.DCKCFGR2 and (not longword(RCC_DCKCFGR2_USART6SEL))) or (__USART6_CLKSOURCE__);
 end;
 
 (** @brief  macro to get the USART6 clock source.
@@ -6185,7 +6184,7 @@ end;
   *)
 function __HAL_RCC_GET_USART6_SOURCE: longword;
 begin
-  exit((((RCC.DKCFGR2 and RCC_DCKCFGR2_USART6SEL))));
+  exit((((RCC.DCKCFGR2 and RCC_DCKCFGR2_USART6SEL))));
 end;
 
  (** @brief  Macro to configure the UART7 clock (UART7CLK).
@@ -6200,7 +6199,7 @@ end;
 procedure __HAL_RCC_UART7_CONFIG(__UART7_CLKSOURCE__: longword);
 begin
 
-  RCC.DKCFGR2 := (RCC.DKCFGR2 and (not longword(RCC_DCKCFGR2_UART7SEL))) or (__UART7_CLKSOURCE__);
+  RCC.DCKCFGR2 := (RCC.DCKCFGR2 and (not longword(RCC_DCKCFGR2_UART7SEL))) or (__UART7_CLKSOURCE__);
 end;
 
 (** @brief  macro to get the UART7 clock source.
@@ -6212,7 +6211,7 @@ end;
   *)
 function __HAL_RCC_GET_UART7_SOURCE: longword;
 begin
-  exit((((RCC.DKCFGR2 and RCC_DCKCFGR2_UART7SEL))));
+  exit((((RCC.DCKCFGR2 and RCC_DCKCFGR2_UART7SEL))));
 end;
 
 (** @brief  Macro to configure the UART8 clock (UART8CLK).
@@ -6227,7 +6226,7 @@ end;
 procedure __HAL_RCC_UART8_CONFIG(__UART8_CLKSOURCE__: longword);
 begin
 
-  RCC.DKCFGR2 := (RCC.DKCFGR2 and (not longword(RCC_DCKCFGR2_UART8SEL))) or (__UART8_CLKSOURCE__);
+  RCC.DCKCFGR2 := (RCC.DCKCFGR2 and (not longword(RCC_DCKCFGR2_UART8SEL))) or (__UART8_CLKSOURCE__);
 end;
 
 (** @brief  macro to get the UART8 clock source.
@@ -6239,7 +6238,7 @@ end;
   *)
 function __HAL_RCC_GET_UART8_SOURCE: longword;
 begin
-  exit((((RCC.DKCFGR2 and RCC_DCKCFGR2_UART8SEL))));
+  exit((((RCC.DCKCFGR2 and RCC_DCKCFGR2_UART8SEL))));
 end;
 
 (** @brief  Macro to configure the LPTIM1 clock (LPTIM1CLK).
@@ -6254,7 +6253,7 @@ end;
 procedure __HAL_RCC_LPTIM1_CONFIG(__LPTIM1_CLKSOURCE__: longword);
 begin
 
-  RCC.DKCFGR2 := (RCC.DKCFGR2 and (not longword(RCC_DCKCFGR2_LPTIM1SEL))) or (__LPTIM1_CLKSOURCE__);
+  RCC.DCKCFGR2 := (RCC.DCKCFGR2 and (not longword(RCC_DCKCFGR2_LPTIM1SEL))) or (__LPTIM1_CLKSOURCE__);
 end;
 
 (** @brief  macro to get the LPTIM1 clock source.
@@ -6266,7 +6265,7 @@ end;
   *)
 function __HAL_RCC_GET_LPTIM1_SOURCE: longword;
 begin
-  exit((((RCC.DKCFGR2 and RCC_DCKCFGR2_LPTIM1SEL))));
+  exit((((RCC.DCKCFGR2 and RCC_DCKCFGR2_LPTIM1SEL))));
 end;
 
 (** @brief  Macro to configure the CEC clock (CECCLK).
@@ -6279,7 +6278,7 @@ end;
 procedure __HAL_RCC_CEC_CONFIG(__CEC_CLKSOURCE__: longword);
 begin
 
-  RCC.DKCFGR2 := (RCC.DKCFGR2 and (not longword(RCC_DCKCFGR2_CECSEL))) or (__CEC_CLKSOURCE__);
+  RCC.DCKCFGR2 := (RCC.DCKCFGR2 and (not longword(RCC_DCKCFGR2_CECSEL))) or (__CEC_CLKSOURCE__);
 end;
 
 (** @brief  macro to get the CEC clock source.
@@ -6289,7 +6288,7 @@ end;
   *)
 function __HAL_RCC_GET_CEC_SOURCE: longword;
 begin
-  exit((((RCC.DKCFGR2 and RCC_DCKCFGR2_CECSEL))));
+  exit((((RCC.DCKCFGR2 and RCC_DCKCFGR2_CECSEL))));
 end;
 
 (** @brief  Macro to configure the CLK48 source (CLK48CLK).
@@ -6302,7 +6301,7 @@ end;
 procedure __HAL_RCC_CLK48_CONFIG(__CLK48_SOURCE__: longword);
 begin
 
-  RCC.DKCFGR2 := (RCC.DKCFGR2 and (not longword(RCC_DCKCFGR2_CK48MSEL))) or (__CLK48_SOURCE__);
+  RCC.DCKCFGR2 := (RCC.DCKCFGR2 and (not longword(RCC_DCKCFGR2_CK48MSEL))) or (__CLK48_SOURCE__);
 end;
 
 (** @brief  macro to get the CLK48 source.
@@ -6312,7 +6311,7 @@ end;
   *)
 function __HAL_RCC_GET_CLK48_SOURCE: longword;
 begin
-  exit((((RCC.DKCFGR2 and RCC_DCKCFGR2_CK48MSEL))));
+  exit((((RCC.DCKCFGR2 and RCC_DCKCFGR2_CK48MSEL))));
 end;
 
 (** @brief  Macro to configure the SDMMC1 clock (SDMMC1CLK).
@@ -6325,7 +6324,7 @@ end;
 procedure __HAL_RCC_SDMMC1_CONFIG(__SDMMC1_CLKSOURCE__: longword);
 begin
 
-  RCC.DKCFGR2 := (RCC.DKCFGR2 and (not longword(RCC_DCKCFGR2_SDMMC1SEL))) or (__SDMMC1_CLKSOURCE__);
+  RCC.DCKCFGR2 := (RCC.DCKCFGR2 and (not longword(RCC_DCKCFGR2_SDMMC1SEL))) or (__SDMMC1_CLKSOURCE__);
 end;
 
 (** @brief  macro to get the SDMMC1 clock source.
@@ -6335,7 +6334,7 @@ end;
   *)
 function __HAL_RCC_GET_SDMMC1_SOURCE: longword;
 begin
-  exit((((RCC.DKCFGR2 and RCC_DCKCFGR2_SDMMC1SEL))));
+  exit((((RCC.DCKCFGR2 and RCC_DCKCFGR2_SDMMC1SEL))));
 end;
 
 function HAL_RCCEx_PeriphCLKConfig(const PeriphClkInit: RCC_PeriphCLKInitTypeDef): HAL_StatusTypeDef;
@@ -6787,9 +6786,9 @@ begin
   PeriphClkInit.PLLSAI.PLLSAIR := ((RCC.PLLSAICFGR and RCC_PLLSAICFGR_PLLSAIR) shr BsfDWord(RCC_PLLSAICFGR_PLLSAIR));
 
   (* Get the PLLSAI/PLLI2S division factors -------------------------------------------*)
-  PeriphClkInit.PLLI2SDivQ := ((RCC.DKCFGR1 and RCC_DCKCFGR1_PLLI2SDIVQ) shr BsfDWord(RCC_DCKCFGR1_PLLI2SDIVQ));
-  PeriphClkInit.PLLSAIDivQ := ((RCC.DKCFGR1 and RCC_DCKCFGR1_PLLSAIDIVQ) shr BsfDWord(RCC_DCKCFGR1_PLLSAIDIVQ));
-  PeriphClkInit.PLLSAIDivR := ((RCC.DKCFGR1 and RCC_DCKCFGR1_PLLSAIDIVR) shr BsfDWord(RCC_DCKCFGR1_PLLSAIDIVR));
+  PeriphClkInit.PLLI2SDivQ := ((RCC.DCKCFGR1 and RCC_DCKCFGR1_PLLI2SDIVQ) shr BsfDWord(RCC_DCKCFGR1_PLLI2SDIVQ));
+  PeriphClkInit.PLLSAIDivQ := ((RCC.DCKCFGR1 and RCC_DCKCFGR1_PLLSAIDIVQ) shr BsfDWord(RCC_DCKCFGR1_PLLSAIDIVQ));
+  PeriphClkInit.PLLSAIDivR := ((RCC.DCKCFGR1 and RCC_DCKCFGR1_PLLSAIDIVR) shr BsfDWord(RCC_DCKCFGR1_PLLSAIDIVR));
 
   (* Get the SAI1 clock configuration ----------------------------------------------*)
   PeriphClkInit.Sai1ClockSelection := __HAL_RCC_GET_SAI1_SOURCE();
@@ -6853,7 +6852,7 @@ begin
   PeriphClkInit.RTCClockSelection := ((tempreg) or (RCC.BDCR and RCC_BDCR_RTCSEL));
 
   (* Get the TIM Prescaler configuration --------------------------------------------*)
-  if ((RCC.DKCFGR1 and RCC_DCKCFGR1_TIMPRE) = 0) then
+  if ((RCC.DCKCFGR1 and RCC_DCKCFGR1_TIMPRE) = 0) then
   begin
     PeriphClkInit.TIMPresSelection := RCC_TIMPRES_DESACTIVATED;
   end
@@ -6877,7 +6876,7 @@ begin
 
   if ((PeriphClk = RCC_PERIPHCLK_SAI1) or (PeriphClk = RCC_PERIPHCLK_SAI2)) then
   begin
-    saiclocksource := RCC.DKCFGR1;
+    saiclocksource := RCC.DCKCFGR1;
     saiclocksource := saiclocksource and ((RCC_DCKCFGR1_SAI1SEL or RCC_DCKCFGR1_SAI2SEL));
     case saiclocksource of
       0: (* PLLSAI is the clock source for SAI*)
@@ -6900,7 +6899,7 @@ begin
         frequency := (vcoinput * ((RCC.PLLSAICFGR and RCC_PLLSAICFGR_PLLSAIN) shr 6)) div (tmpreg);
 
         (* SAI_CLK_x := SAI_CLK(first level) div PLLSAIDIVQ *)
-        tmpreg := (((RCC.DKCFGR1 and RCC_DCKCFGR1_PLLSAIDIVQ) shr 8) + 1);
+        tmpreg := (((RCC.DCKCFGR1 and RCC_DCKCFGR1_PLLSAIDIVQ) shr 8) + 1);
         frequency := frequency div (tmpreg);
       end;
       RCC_DCKCFGR1_SAI1SEL_0, (* PLLI2S is the clock source for SAI*)
@@ -6925,7 +6924,7 @@ begin
         frequency := (vcoinput * ((RCC.PLLI2SCFGR and RCC_PLLI2SCFGR_PLLI2SN) shr 6)) div (tmpreg);
 
         (* SAI_CLK_x := SAI_CLK(first level) div PLLI2SDIVQ *)
-        tmpreg := ((RCC.DKCFGR1 and RCC_DCKCFGR1_PLLI2SDIVQ) + 1);
+        tmpreg := ((RCC.DCKCFGR1 and RCC_DCKCFGR1_PLLI2SDIVQ) + 1);
         frequency := frequency div (tmpreg);
       end;
       RCC_DCKCFGR1_SAI1SEL_1, (* External clock is the clock source for SAI*)

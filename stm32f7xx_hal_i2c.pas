@@ -115,7 +115,7 @@ type
   PI2C_HandleTypeDef = ^I2C_HandleTypeDef;
 
   I2C_HandleTypeDef = record
-    Instance: ^TI2C1_Registers;  (*!< I2C registers base address      *)
+    Instance: ^I2C_TypeDef;  (*!< I2C registers base address      *)
     Init: I2C_InitTypeDef;  (*!< I2C communication parameters    *)
     pBuffPtr: pbyte;  (*!< Pointer to I2C transfer buffer  *)
     XferSize: word;  (*!< I2C transfer size               *)

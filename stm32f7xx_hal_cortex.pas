@@ -76,7 +76,8 @@ procedure HAL_SYSTICK_CLKSourceConfig(CLKSource: longword);
 
 implementation
 
-uses cortexm4;
+uses
+  cortexm7;
 
 const
   __NVIC_PRIO_BITS = 4;
@@ -143,9 +144,9 @@ end;
 procedure NVIC_SetPriority(IRQn: IRQn_Type; priority: longword);
 begin
   if IRQn < 0 then
-    SCB.SHP[(IRQn and $F) - 4] := ((priority shl (8 - __NVIC_PRIO_BITS)) and $FF)
+    SCB.SHPR[(IRQn and $F) - 4] := ((priority shl (8 - __NVIC_PRIO_BITS)) and $FF)
   else
-    pbyte(@stm32f7x.NVIC.IPR0)[IRQn] := ((priority shl (8 - __NVIC_PRIO_BITS)) and $FF);
+    NVIC.IP[IRQn] := ((priority shl (8 - __NVIC_PRIO_BITS)) and $FF);
 end;
 
 procedure HAL_NVIC_SetPriority(IRQn: IRQn_Type; PreemptPriority, SubPriority: longword);
@@ -160,12 +161,12 @@ end;
 
 procedure HAL_NVIC_EnableIRQ(IRQn: IRQn_Type);
 begin
-  pbyte(@stm32f7x.NVIC.ISER0)[IRQn shr 5] := (1 shl (IRQn) and $1F);
+  NVIC.ISER[IRQn shr 5] := (1 shl (IRQn) and $1F);
 end;
 
 procedure HAL_NVIC_DisableIRQ(IRQn: IRQn_Type);
 begin
-  pbyte(@stm32f7x.NVIC.ICER0)[IRQn shr 5] := (1 shl (IRQn) and $1F);
+  NVIC.ICER[IRQn shr 5] := (1 shl (IRQn) and $1F);
 end;
 
 procedure HAL_NVIC_SystemReset;
@@ -193,9 +194,9 @@ end;
 function NVIC_GetPriority(IRQn: IRQn_Type): longword;
 begin
   if (IRQn < 0) then
-    exit((SCB.SHP[((IRQn) and $F) - 4] shl (8 - __NVIC_PRIO_BITS)))
+    exit((SCB.SHPR[((IRQn) and $F) - 4] shl (8 - __NVIC_PRIO_BITS)))
   else
-    exit((pbyte(@stm32f7x.NVIC.IPR0)[IRQn] shl (8 - __NVIC_PRIO_BITS)));
+    exit((NVIC.IP[IRQn] shl (8 - __NVIC_PRIO_BITS)));
 end;
 
 procedure NVIC_DecodePriority(Priority, PriorityGroup: longword;
@@ -230,22 +231,22 @@ end;
 
 function HAL_NVIC_GetPendingIRQ(IRQn: IRQn_Type): longword;
 begin
-  exit(Ord(((pbyte(@stm32f7x.NVIC.ISPR0)[((IRQn) shr 5)] and (1 shl (IRQn and $1F))) <> 0)));
+  exit(Ord(((NVIC.ISPR[((IRQn) shr 5)] and (1 shl (IRQn and $1F))) <> 0)));
 end;
 
 procedure HAL_NVIC_SetPendingIRQ(IRQn: IRQn_Type);
 begin
-  pbyte(@stm32f7x.NVIC.ISPR0)[((IRQn) shr 5)] := (1 shl ((IRQn) and $1F));
+  NVIC.ISPR[((IRQn) shr 5)] := (1 shl ((IRQn) and $1F));
 end;
 
 procedure HAL_NVIC_ClearPendingIRQ(IRQn: IRQn_Type);
 begin
-  pbyte(@stm32f7x.NVIC.ICPR0)[((IRQn) shr 5)] := (1 shl ((IRQn) and $1F));
+  NVIC.ICPR[((IRQn) shr 5)] := (1 shl ((IRQn) and $1F));
 end;
 
 function HAL_NVIC_GetActive(IRQn: IRQn_Type): longword;
 begin
-  exit(ord(((pbyte(@stm32f7x.NVIC.IABR0)[((IRQn) shl 5)] and (1 shl ((IRQn) and $1F))) <> 0)));
+  exit(ord(((NVIC.IABR[((IRQn) shl 5)] and (1 shl ((IRQn) and $1F))) <> 0)));
 end;
 
 procedure HAL_SYSTICK_CLKSourceConfig(CLKSource: longword);

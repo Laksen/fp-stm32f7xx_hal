@@ -289,7 +289,7 @@ begin
   end;
 
   (* Check if Multimode enabled *)
-  if (HAL_IS_BIT_CLR(C_ADC.CCR, ADC_CCR_MULTI)) then
+  if (HAL_IS_BIT_CLR(ADC.CCR, ADC_CCR_MULTI)) then
   begin
     tmp1 := HAL_IS_BIT_CLR(hadc.Instance^.CR2, ADC_CR2_JEXTEN);
     tmp2 := HAL_IS_BIT_CLR(hadc.Instance^.CR1, ADC_CR1_JAUTO);
@@ -418,7 +418,7 @@ begin
   __HAL_ADC_ENABLE_IT(hadc, ADC_IT_OVR);
 
   (* Check if Multimode enabled *)
-  if (HAL_IS_BIT_CLR(C_ADC.CCR, ADC_CCR_MULTI)) then
+  if (HAL_IS_BIT_CLR(ADC.CCR, ADC_CCR_MULTI)) then
   begin
     tmp1 := HAL_IS_BIT_CLR(hadc.Instance^.CR2, ADC_CR2_JEXTEN);
     tmp2 := HAL_IS_BIT_CLR(hadc.Instance^.CR1, ADC_CR1_JAUTO);
@@ -500,12 +500,12 @@ begin
   if (hadc.Init.DMAContinuousRequests <> 0) then
   begin
     (* Enable the selected ADC DMA request after last transfer *)
-    C_ADC.CCR := C_ADC.CCR or ADC_CCR_DDS;
+    ADC.CCR := ADC.CCR or ADC_CCR_DDS;
   end
   else
   begin
     (* Disable the selected ADC EOC rising on each regular channel conversion *)
-    C_ADC.CCR := C_ADC.CCR and (not ADC_CCR_DDS);
+    ADC.CCR := ADC.CCR and (not ADC_CCR_DDS);
   end;
 
   (* Set the DMA transfer complete callback *)
@@ -518,7 +518,7 @@ begin
   hadc.DMA_Handle^.XferErrorCallback := @ADC_MultiModeDMAError;
 
   (* Enable the DMA Stream *)
-  HAL_DMA_Start_IT(hadc.DMA_Handle^, @C_ADC.CDR, pData, Length);
+  HAL_DMA_Start_IT(hadc.DMA_Handle^, @ADC.CDR, pData, Length);
 
   (* Change ADC state *)
   hadc.State := HAL_ADC_STATE_BUSY_REG;
@@ -565,7 +565,7 @@ begin
   __HAL_ADC_DISABLE_IT(hadc, ADC_IT_OVR);
 
   (* Disable the selected ADC DMA request after last transfer *)
-  C_ADC.CCR := C_ADC.CCR and (not ADC_CCR_DDS);
+  ADC.CCR := ADC.CCR and (not ADC_CCR_DDS);
 
   (* Disable the ADC DMA Stream *)
   HAL_DMA_Abort(hadc.DMA_Handle^);
@@ -583,7 +583,7 @@ end;
 function HAL_ADCEx_MultiModeGetValue(var hadc: ADC_HandleTypeDef): longword;
 begin
   (* Return the multi mode conversion value *)
-  exit(C_ADC.CDR);
+  exit(ADC.CDR);
 end;
 
 function HAL_ADCEx_InjectedConfigChannel(var hadc: ADC_HandleTypeDef; var sConfigInjected: ADC_InjectionConfTypeDef): HAL_StatusTypeDef;
@@ -682,14 +682,14 @@ begin
   if ((hadc.Instance = @ADC1) and (sConfigInjected.InjectedChannel = ADC_CHANNEL_VBAT)) then
   begin
     (* Enable the VBAT channel*)
-    C_ADC.CCR := C_ADC.CCR or ADC_CCR_VBATE;
+    ADC.CCR := ADC.CCR or ADC_CCR_VBATE;
   end;
 
   (* if ADC1 Channel_16 or Channel_17 is selected enable TSVREFE Channel(Temperature sensor and VREFINT) *)
   if ((hadc.Instance = @ADC1) and ((sConfigInjected.InjectedChannel = ADC_CHANNEL_TEMPSENSOR) or (sConfigInjected.InjectedChannel = ADC_CHANNEL_VREFINT))) then
   begin
     (* Enable the TSVREFE channel*)
-    C_ADC.CCR := C_ADC.CCR or ADC_CCR_TSVREFE;
+    ADC.CCR := ADC.CCR or ADC_CCR_TSVREFE;
   end;
 
   (* Process unlocked *)
@@ -705,16 +705,16 @@ begin
   __HAL_Lock(hadc.lock);
 
   (* Set ADC mode *)
-  C_ADC.CCR := C_ADC.CCR and (not (ADC_CCR_MULTI));
-  C_ADC.CCR := C_ADC.CCR or multimode.Mode;
+  ADC.CCR := ADC.CCR and (not (ADC_CCR_MULTI));
+  ADC.CCR := ADC.CCR or multimode.Mode;
 
-  (* Set the C_ADC DMA access mode *)
-  C_ADC.CCR := C_ADC.CCR and (not (ADC_CCR_DMA));
-  C_ADC.CCR := C_ADC.CCR or multimode.DMAAccessMode;
+  (* Set the ADC DMA access mode *)
+  ADC.CCR := ADC.CCR and (not (ADC_CCR_DMA));
+  ADC.CCR := ADC.CCR or multimode.DMAAccessMode;
 
   (* Set delay between two sampling phases *)
-  C_ADC.CCR := C_ADC.CCR and (not (ADC_CCR_DELAY));
-  C_ADC.CCR := C_ADC.CCR or multimode.TwoSamplingDelay;
+  ADC.CCR := ADC.CCR and (not (ADC_CCR_DELAY));
+  ADC.CCR := ADC.CCR or multimode.TwoSamplingDelay;
 
   (* Process unlocked *)
   __HAL_Unlock(hadc.lock);

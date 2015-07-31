@@ -191,11 +191,11 @@ const
   GPIOH_PIN_AVAILABLE = GPIO_PIN_All;
   GPIOK_PIN_AVAILABLE = (GPIO_PIN_0 or GPIO_PIN_1 or GPIO_PIN_3 or GPIO_PIN_4 or GPIO_PIN_5 or GPIO_PIN_6 or GPIO_PIN_7);
 
-function GPIO_GET_INDEX(var __GPIOx__: TGPIOA_Registers): longword;
+function GPIO_GET_INDEX(var __GPIOx__: GPIO_TypeDef): longword;
 
 implementation
 
-function GPIO_GET_INDEX(var __GPIOx__: TGPIOA_Registers): longword;
+function GPIO_GET_INDEX(var __GPIOx__: GPIO_TypeDef): longword;
 begin
   if @__GPIOx__ = @GPIOA then
     exit(0)

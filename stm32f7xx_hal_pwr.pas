@@ -228,7 +228,7 @@ const
 implementation
 
 uses
-  cortexm4,
+  cortexm7,
   stm32f7xx_hal_rcc,
   stm32f7xx_hal_rcc_ex;
 

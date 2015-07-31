@@ -92,6 +92,12 @@ type
 
 
 type
+  PUSB_OTG_DeviceTypeDef = ^USB_OTG_DeviceTypeDef;
+  PUSB_OTG_INEndpointTypeDef = ^USB_OTG_INEndpointTypeDef;
+  PUSB_OTG_OUTEndpointTypeDef = ^USB_OTG_OUTEndpointTypeDef;
+  PUSB_OTG_HostTypeDef = ^USB_OTG_HostTypeDef;
+  PUSB_OTG_HostChannelTypeDef = ^USB_OTG_HostChannelTypeDef;
+
   (**
   * @brief  PCD Initialization Structure definition
    *)
@@ -1181,7 +1187,7 @@ begin
   USBx.GCCFG := USBx.GCCFG or USB_OTG_GCCFG_VBDEN;
 
   (* Disable the FS div LS support mode only *)
-  if ((cfg.speed = USB_OTG_SPEED_FULL) and (@USBx <> @OTG_FS_GLOBAL)) then
+  if ((cfg.speed = USB_OTG_SPEED_FULL) and (@USBx <> @USB_OTG_FS)) then
     USBx_HOST(usbx)^.HCFG := USBx_HOST(usbx)^.HCFG or USB_OTG_HCFG_FSLSS
   else
     USBx_HOST(usbx)^.HCFG := USBx_HOST(usbx)^.HCFG and (not (USB_OTG_HCFG_FSLSS));
@@ -1209,7 +1215,7 @@ begin
   USBx.GINTSTS := $FFFFFFFF;
 
 
-  if (@USBx = @OTG_FS_GLOBAL) then
+  if (@USBx = @USB_OTG_FS) then
   begin
     (* set Rx FIFO size *)
     USBx.GRXFSIZ := $80;
@@ -1309,7 +1315,7 @@ begin
         USBx_HC(usbx,ch_num)^.HCINTMSK := USBx_HC(usbx,ch_num)^.HCINTMSK or USB_OTG_HCINTMSK_BBERRM
       else
       begin
-        if (@USBx <> @OTG_FS_GLOBAL) then
+        if (@USBx <> @USB_OTG_FS) then
           USBx_HC(usbx,ch_num)^.HCINTMSK := USBx_HC(usbx,ch_num)^.HCINTMSK or (USB_OTG_HCINTMSK_NYET or USB_OTG_HCINTMSK_ACKM);
       end;
     end;
@@ -1362,7 +1368,7 @@ begin
   max_hc_pkt_count := 256;
   tmpreg := 0;
 
-  if ((@USBx <> @OTG_FS_GLOBAL) and (hc.speed = USB_OTG_SPEED_HIGH)) then
+  if ((@USBx <> @USB_OTG_FS) and (hc.speed = USB_OTG_SPEED_HIGH)) then
   begin
     if ((not dma) and (hc.do_ping = 1)) then
     begin

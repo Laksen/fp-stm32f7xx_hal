@@ -149,7 +149,7 @@ type
    *)
 
 type
-  PLTDC_TypeDef = ^TLTDC_Registers;
+  PLTDC_TypeDef = ^LTDC_TypeDef;
   PLTDC_Layer_TypeDef = ^LTDC_Layer_TypeDef;
 
   LTDC_HandleTypeDef = record

@@ -80,8 +80,8 @@ const
   ETH_DMARXDESC_FRAMELENGTHSHIFT = 16;
   (* ETHERNET MAC address offsets  *)
 
-  ETH_MAC_ADDR_HBASE = (Ethernet_MAC_BASE + $40);  (* ETHERNET MAC address high offset  *)
-  ETH_MAC_ADDR_LBASE = (Ethernet_MAC_BASE + $44);  (* ETHERNET MAC address low offset  *)
+  ETH_MAC_ADDR_HBASE = (ETH_MAC_BASE + $40);  (* ETHERNET MAC address high offset  *)
+  ETH_MAC_ADDR_LBASE = (ETH_MAC_BASE + $44);  (* ETHERNET MAC address low offset  *)
   (* ETHERNET MACMIIAR register Mask  *)
 
   ETH_MACMIIAR_CR_MASK = $FFFFFFE3;

@@ -142,13 +142,13 @@ const
   * @end;
    *)
 
-procedure HAL_GPIO_Init(var GPIOx: TGPIOA_Registers; const GPIO_Init: GPIO_InitTypeDef);
-procedure HAL_GPIO_DeInit(var GPIOx: TGPIOA_Registers; GPIO_Pin: longword);
+procedure HAL_GPIO_Init(var GPIOx:  GPIO_TypeDef; const GPIO_Init: GPIO_InitTypeDef);
+procedure HAL_GPIO_DeInit(var GPIOx: GPIO_TypeDef; GPIO_Pin: longword);
 
-function HAL_GPIO_ReadPin(var GPIOx: TGPIOA_Registers; GPIO_Pin: word): GPIO_PinState;
-procedure HAL_GPIO_WritePin(var GPIOx: TGPIOA_Registers; GPIO_Pin: word; PinState: GPIO_PinState);
-procedure HAL_GPIO_TogglePin(var GPIOx: TGPIOA_Registers; GPIO_Pin: word);
-function HAL_GPIO_LockPin(var GPIOx: TGPIOA_Registers; GPIO_Pin: word): HAL_StatusTypeDef;
+function HAL_GPIO_ReadPin(var GPIOx: GPIO_TypeDef; GPIO_Pin: word): GPIO_PinState;
+procedure HAL_GPIO_WritePin(var GPIOx: GPIO_TypeDef; GPIO_Pin: word; PinState: GPIO_PinState);
+procedure HAL_GPIO_TogglePin(var GPIOx: GPIO_TypeDef; GPIO_Pin: word);
+function HAL_GPIO_LockPin(var GPIOx: GPIO_TypeDef; GPIO_Pin: word): HAL_StatusTypeDef;
 
 implementation
 
@@ -168,7 +168,7 @@ const
   FALLING_EDGE = ($00200000);
   GPIO_OUTPUT_TYPE = ($00000010);
 
-procedure HAL_GPIO_Init(var GPIOx: TGPIOA_Registers; const GPIO_Init: GPIO_InitTypeDef);
+procedure HAL_GPIO_Init(var GPIOx: GPIO_TypeDef; const GPIO_Init: GPIO_InitTypeDef);
 var
   position, ioposition, iocurrent, temp: longword;
 begin
@@ -192,10 +192,10 @@ begin
       if ((GPIO_Init.Mode = GPIO_MODE_AF_PP) or (GPIO_Init.Mode = GPIO_MODE_AF_OD)) then
       begin
         (* Configure Alternate function mapped with the current IO *)
-        temp := plongword(@GPIOx.AFRL)[position shr 3];
+        temp := GPIOx.AFR[position shr 3];
         temp := temp and (not ($F shl ((position and $07) * 4)));
         temp := temp or ((GPIO_Init.Alternate) shl ((position and $07) * 4));
-        plongword(@GPIOx.AFRL)[position shr 3] := temp;
+        GPIOx.AFR[position shr 3] := temp;
       end;
 
       (* Configure IO Direction mode (Input, Output, Alternate or Analog) *)
@@ -233,10 +233,10 @@ begin
         (* Enable SYSCFG Clock *)
         __HAL_RCC_SYSCFG_CLK_ENABLE();
 
-        temp := plongword(@SYSCFG.EXTICR1)[position shr 2];
+        temp := SYSCFG.EXTICR[position shr 2];
         temp := temp and (not (($0F) shl (4 * (position and $03))));
         temp := temp or ((GPIO_GET_INDEX(GPIOx)) shl (4 * (position and $03)));
-        plongword(@SYSCFG.EXTICR1)[position shr 2] := temp;
+        SYSCFG.EXTICR[position shr 2] := temp;
 
         (* Clear EXTI line configuration *)
         temp := EXTI.IMR;
@@ -276,7 +276,7 @@ begin
   end;
 end;
 
-procedure HAL_GPIO_DeInit(var GPIOx: TGPIOA_Registers; GPIO_Pin: longword);
+procedure HAL_GPIO_DeInit(var GPIOx: GPIO_TypeDef; GPIO_Pin: longword);
 var
   position, ioposition, iocurrent, tmp: longword;
 begin
@@ -299,7 +299,7 @@ begin
       GPIOx.MODER := GPIOx.MODER and not (GPIO_MODER_MODER0 shl (position * 2));
 
       (* Configure the default Alternate Function in current IO *)
-      plongword(@GPIOx.AFRL)[position shr 3] := plongword(@GPIOx.AFRL)[position shr 3] and not ($F shl ((position and $07) * 4));
+      GPIOx.AFR[position shr 3] := GPIOx.AFR[position shr 3] and not ($F shl ((position and $07) * 4));
 
       (* Configure the default value for IO Speed *)
       GPIOx.OSPEEDR := GPIOx.OSPEEDR and not (GPIO_OSPEEDER_OSPEEDR0 shl (position * 2));
@@ -311,13 +311,13 @@ begin
       GPIOx.PUPDR := GPIOx.PUPDR and not (GPIO_PUPDR_PUPDR0 shl (position * 2));
 
       (*------------------------- EXTI Mode Configuration --------------------*)
-      tmp := plongword(@SYSCFG.EXTICR1)[position shr 2];
+      tmp := SYSCFG.EXTICR[position shr 2];
       tmp := tmp and (($0F) shl (4 * (position and $03)));
       if (tmp = ((GPIO_GET_INDEX(GPIOx)) shl (4 * (position and $03)))) then
       begin
         (* Configure the External Interrupt or event for the current IO *)
         tmp := ($0F) shl (4 * (position and $03));
-        plongword(@SYSCFG.EXTICR1)[position shr 2] := plongword(@SYSCFG.EXTICR1)[position shr 2] and not tmp;
+        SYSCFG.EXTICR[position shr 2] := SYSCFG.EXTICR[position shr 2] and not tmp;
 
         (* Clear EXTI line configuration *)
         EXTI.IMR := EXTI.IMR and not (iocurrent);
@@ -331,7 +331,7 @@ begin
   end;
 end;
 
-function HAL_GPIO_ReadPin(var GPIOx: TGPIOA_Registers; GPIO_Pin: word): GPIO_PinState;
+function HAL_GPIO_ReadPin(var GPIOx: GPIO_TypeDef; GPIO_Pin: word): GPIO_PinState;
 var
   bitstatus: GPIO_PinState;
 begin
@@ -343,7 +343,7 @@ begin
   exit(bitstatus);
 end;
 
-procedure HAL_GPIO_WritePin(var GPIOx: TGPIOA_Registers; GPIO_Pin: word; PinState: GPIO_PinState);
+procedure HAL_GPIO_WritePin(var GPIOx: GPIO_TypeDef; GPIO_Pin: word; PinState: GPIO_PinState);
 begin
   if (PinState <> GPIO_PIN_RESET) then
     GPIOx.BSRR := GPIO_Pin
@@ -351,12 +351,12 @@ begin
     GPIOx.BSRR := longword(GPIO_Pin) shl 16;
 end;
 
-procedure HAL_GPIO_TogglePin(var GPIOx: TGPIOA_Registers; GPIO_Pin: word);
+procedure HAL_GPIO_TogglePin(var GPIOx: GPIO_TypeDef; GPIO_Pin: word);
 begin
   GPIOx.ODR := GPIOx.ODR xor GPIO_Pin;
 end;
 
-function HAL_GPIO_LockPin(var GPIOx: TGPIOA_Registers; GPIO_Pin: word): HAL_StatusTypeDef;
+function HAL_GPIO_LockPin(var GPIOx: GPIO_TypeDef; GPIO_Pin: word): HAL_StatusTypeDef;
 var
   tmp: word;
 begin
