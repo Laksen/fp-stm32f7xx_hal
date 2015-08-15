@@ -98,7 +98,7 @@ const
   VDD_VALUE = 3300;  (*!< Value of VDD in mv  *)
   TICK_INT_PRIORITY = $0F;  (*!< tick interrupt priority  *)
   USE_RTOS = false;
-  ART_ACCLERATOR_ENABLE = false;  (* To enable instruction cache and prefetch  *)
+  ART_ACCLERATOR_ENABLE = true;  (* To enable instruction cache and prefetch  *)
   (* ########################## Assert Selection ##############################  *)
 
   (**

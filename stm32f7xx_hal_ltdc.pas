@@ -671,25 +671,25 @@ begin
   exit(HAL_OK);
 end;
 
-{procedure HAL_LTDC_MspInit(var hltdc: LTDC_HandleTypeDef); public name 'HAL_LTDC_MspInit';
-asm
-  .weak HAL_LTDC_MspInit
-end;
+procedure HAL_LTDC_MspInit_Stub(var hltdc: LTDC_HandleTypeDef); assembler; nostackframe; public name 'HAL_LTDC_MspInit';
+  asm
+    .weak HAL_LTDC_MspInit
+  end;
 
-procedure HAL_LTDC_MspDeInit(var hltdc: LTDC_HandleTypeDef);
-begin
+procedure HAL_LTDC_MspDeInit_Stub(var hltdc: LTDC_HandleTypeDef); assembler; nostackframe; public name 'HAL_LTDC_MspDeInit';
+  asm
+    .weak HAL_LTDC_MspDeInit
+  end;
 
-end;
+procedure HAL_LTDC_ErrorCallback_Stub(var hltdc: LTDC_HandleTypeDef); assembler; nostackframe; public name 'HAL_LTDC_ErrorCallback';
+  asm
+    .weak HAL_LTDC_ErrorCallback
+  end;
 
-procedure HAL_LTDC_ErrorCallback(var hltdc: LTDC_HandleTypeDef);
-begin
-
-end;
-
-procedure HAL_LTDC_LineEvenCallback(var hltdc: LTDC_HandleTypeDef);
-begin
-
-end;}
+procedure HAL_LTDC_LineEvenCallback_Stub(var hltdc: LTDC_HandleTypeDef); assembler; nostackframe; public name 'HAL_LTDC_LineEvenCallback';
+  asm
+    .weak HAL_LTDC_LineEvenCallback
+  end;
 
 procedure HAL_LTDC_IRQHandler(var hltdc: LTDC_HandleTypeDef);
 begin

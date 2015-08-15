@@ -2783,7 +2783,7 @@ begin
   heth.State := HAL_ETH_STATE_BUSY;
 
   (* Set the DMATxDescToSet pointer with the first one of the DMATxDescTab list *)
-  heth.TxDesc := @DMATxDescTab;
+  heth.TxDesc := DMATxDescTab;
 
   (* Fill each DMATxDesc descriptor with the right values *)
   for i := 0 to txbuffcount - 1 do
@@ -2938,7 +2938,7 @@ begin
       for i := 0 to bufcount - 1 do
         begin
           (* Clear FIRST and LAST segment bits *)
-          heth.TxDesc^.Status := heth.TxDesc^.Status and (not (ETH_DMATXDESC_FS or ETH_DMATXDESC_LS));
+          heth.TxDesc^.Status := heth.TxDesc^.Status and (not longword(ETH_DMATXDESC_FS or ETH_DMATXDESC_LS));
 
           if (i = 0) then
             (* Setting the first segment bit *)

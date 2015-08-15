@@ -1275,207 +1275,156 @@ const
   PLLSAI_TIMEOUT_VALUE = 100;  (* Timeout value fixed to 100 ms   *)
 
 procedure __HAL_RCC_BKPSRAM_CLK_ENABLE;
-
 var
   tmpreg: longword;
 begin
-
   RCC.AHB1ENR := RCC.AHB1ENR or longword(RCC_AHB1ENR_BKPSRAMEN);
   (* Delay after an RCC peripheral clock enabling *)
   tmpreg := (RCC.AHB1ENR and RCC_AHB1ENR_BKPSRAMEN);
-
 end;
 
 procedure __HAL_RCC_DTCMRAMEN_CLK_ENABLE;
-
 var
   tmpreg: longword;
 begin
-
   RCC.AHB1ENR := RCC.AHB1ENR or longword(RCC_AHB1ENR_DTCMRAMEN);
   (* Delay after an RCC peripheral clock enabling *)
   tmpreg := (RCC.AHB1ENR and RCC_AHB1ENR_DTCMRAMEN);
-
 end;
 
 procedure __HAL_RCC_DMA2_CLK_ENABLE;
-
 var
   tmpreg: longword;
 begin
-
   RCC.AHB1ENR := RCC.AHB1ENR or longword(RCC_AHB1ENR_DMA2EN);
   (* Delay after an RCC peripheral clock enabling *)
   tmpreg := (RCC.AHB1ENR and RCC_AHB1ENR_DMA2EN);
-
 end;
 
 procedure __HAL_RCC_DMA2D_CLK_ENABLE;
-
 var
   tmpreg: longword;
 begin
-
   RCC.AHB1ENR := RCC.AHB1ENR or longword(RCC_AHB1ENR_DMA2DEN);
   (* Delay after an RCC peripheral clock enabling *)
   tmpreg := (RCC.AHB1ENR and RCC_AHB1ENR_DMA2DEN);
-
 end;
 
 procedure __HAL_RCC_USB_OTG_HS_CLK_ENABLE;
-
 var
   tmpreg: longword;
 begin
-
   RCC.AHB1ENR := RCC.AHB1ENR or longword(RCC_AHB1ENR_OTGHSEN);
   (* Delay after an RCC peripheral clock enabling *)
   tmpreg := (RCC.AHB1ENR and RCC_AHB1ENR_OTGHSEN);
-
 end;
 
 procedure __HAL_RCC_USB_OTG_HS_ULPI_CLK_ENABLE;
-
 var
   tmpreg: longword;
 begin
-
   RCC.AHB1ENR := RCC.AHB1ENR or longword(RCC_AHB1ENR_OTGHSULPIEN);
   (* Delay after an RCC peripheral clock enabling *)
   tmpreg := (RCC.AHB1ENR and RCC_AHB1ENR_OTGHSULPIEN);
-
 end;
 
 procedure __HAL_RCC_GPIOA_CLK_ENABLE;
-
 var
   tmpreg: longword;
 begin
-
   RCC.AHB1ENR := RCC.AHB1ENR or longword(RCC_AHB1ENR_GPIOAEN);
   (* Delay after an RCC peripheral clock enabling *)
   tmpreg := (RCC.AHB1ENR and RCC_AHB1ENR_GPIOAEN);
-
 end;
 
 procedure __HAL_RCC_GPIOB_CLK_ENABLE;
-
 var
   tmpreg: longword;
 begin
-
   RCC.AHB1ENR := RCC.AHB1ENR or longword(RCC_AHB1ENR_GPIOBEN);
   (* Delay after an RCC peripheral clock enabling *)
   tmpreg := (RCC.AHB1ENR and RCC_AHB1ENR_GPIOBEN);
-
 end;
 
 procedure __HAL_RCC_GPIOC_CLK_ENABLE;
-
 var
   tmpreg: longword;
 begin
-
   RCC.AHB1ENR := RCC.AHB1ENR or longword(RCC_AHB1ENR_GPIOCEN);
   (* Delay after an RCC peripheral clock enabling *)
   tmpreg := (RCC.AHB1ENR and RCC_AHB1ENR_GPIOCEN);
-
 end;
 
 procedure __HAL_RCC_GPIOD_CLK_ENABLE;
-
 var
   tmpreg: longword;
 begin
-
   RCC.AHB1ENR := RCC.AHB1ENR or longword(RCC_AHB1ENR_GPIODEN);
   (* Delay after an RCC peripheral clock enabling *)
   tmpreg := (RCC.AHB1ENR and RCC_AHB1ENR_GPIODEN);
-
 end;
 
 procedure __HAL_RCC_GPIOE_CLK_ENABLE;
-
 var
   tmpreg: longword;
 begin
-
   RCC.AHB1ENR := RCC.AHB1ENR or longword(RCC_AHB1ENR_GPIOEEN);
   (* Delay after an RCC peripheral clock enabling *)
   tmpreg := (RCC.AHB1ENR and RCC_AHB1ENR_GPIOEEN);
-
 end;
 
 procedure __HAL_RCC_GPIOF_CLK_ENABLE;
-
 var
   tmpreg: longword;
 begin
-
   RCC.AHB1ENR := RCC.AHB1ENR or longword(RCC_AHB1ENR_GPIOFEN);
   (* Delay after an RCC peripheral clock enabling *)
   tmpreg := (RCC.AHB1ENR and RCC_AHB1ENR_GPIOFEN);
-
 end;
 
 procedure __HAL_RCC_GPIOG_CLK_ENABLE;
-
 var
   tmpreg: longword;
 begin
-
   RCC.AHB1ENR := RCC.AHB1ENR or longword(RCC_AHB1ENR_GPIOGEN);
   (* Delay after an RCC peripheral clock enabling *)
   tmpreg := (RCC.AHB1ENR and RCC_AHB1ENR_GPIOGEN);
-
 end;
 
 procedure __HAL_RCC_GPIOH_CLK_ENABLE;
-
 var
   tmpreg: longword;
 begin
-
   RCC.AHB1ENR := RCC.AHB1ENR or longword(RCC_AHB1ENR_GPIOHEN);
   (* Delay after an RCC peripheral clock enabling *)
   tmpreg := (RCC.AHB1ENR and RCC_AHB1ENR_GPIOHEN);
-
 end;
 
 procedure __HAL_RCC_GPIOI_CLK_ENABLE;
-
 var
   tmpreg: longword;
 begin
-
   RCC.AHB1ENR := RCC.AHB1ENR or longword(RCC_AHB1ENR_GPIOIEN);
   (* Delay after an RCC peripheral clock enabling *)
   tmpreg := (RCC.AHB1ENR and RCC_AHB1ENR_GPIOIEN);
-
 end;
 
 procedure __HAL_RCC_GPIOJ_CLK_ENABLE;
-
 var
   tmpreg: longword;
 begin
-
   RCC.AHB1ENR := RCC.AHB1ENR or longword(RCC_AHB1ENR_GPIOJEN);
   (* Delay after an RCC peripheral clock enabling *)
   tmpreg := (RCC.AHB1ENR and RCC_AHB1ENR_GPIOJEN);
-
 end;
 
 procedure __HAL_RCC_GPIOK_CLK_ENABLE;
-
 var
   tmpreg: longword;
 begin
-
   RCC.AHB1ENR := RCC.AHB1ENR or longword(RCC_AHB1ENR_GPIOKEN);
   (* Delay after an RCC peripheral clock enabling *)
   tmpreg := (RCC.AHB1ENR and RCC_AHB1ENR_GPIOKEN);
-
 end;
 
 procedure __HAL_RCC_BKPSRAM_CLK_DISABLE;
@@ -1567,60 +1516,46 @@ end;
   * @brief  Enable ETHERNET clock.
   *)
 procedure __HAL_RCC_ETHMAC_CLK_ENABLE;
-
 var
   tmpreg: longword;
 begin
-
   RCC.AHB1ENR := RCC.AHB1ENR or longword(RCC_AHB1ENR_ETHMACEN);
   (* Delay after an RCC peripheral clock enabling *)
   tmpreg := (RCC.AHB1ENR and RCC_AHB1ENR_ETHMACEN);
-
 end;
 
 procedure __HAL_RCC_ETHMACTX_CLK_ENABLE;
-
 var
   tmpreg: longword;
 begin
-
   RCC.AHB1ENR := RCC.AHB1ENR or longword(RCC_AHB1ENR_ETHMACTXEN);
   (* Delay after an RCC peripheral clock enabling *)
   tmpreg := (RCC.AHB1ENR and RCC_AHB1ENR_ETHMACTXEN);
-
 end;
 
 procedure __HAL_RCC_ETHMACRX_CLK_ENABLE;
-
 var
   tmpreg: longword;
 begin
-
   RCC.AHB1ENR := RCC.AHB1ENR or longword(RCC_AHB1ENR_ETHMACRXEN);
   (* Delay after an RCC peripheral clock enabling *)
   tmpreg := (RCC.AHB1ENR and RCC_AHB1ENR_ETHMACRXEN);
-
 end;
 
 procedure __HAL_RCC_ETHMACPTP_CLK_ENABLE;
-
 var
   tmpreg: longword;
 begin
-
   RCC.AHB1ENR := RCC.AHB1ENR or longword(RCC_AHB1ENR_ETHMACPTPEN);
   (* Delay after an RCC peripheral clock enabling *)
   tmpreg := (RCC.AHB1ENR and RCC_AHB1ENR_ETHMACPTPEN);
-
 end;
 
 procedure __HAL_RCC_ETH_CLK_ENABLE;
 begin
-
   __HAL_RCC_ETHMAC_CLK_ENABLE();
   __HAL_RCC_ETHMACTX_CLK_ENABLE();
   __HAL_RCC_ETHMACRX_CLK_ENABLE();
-
 end;
 
 (**

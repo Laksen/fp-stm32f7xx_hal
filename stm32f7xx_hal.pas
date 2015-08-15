@@ -58,8 +58,6 @@
 
 unit stm32f7xx_hal;
 
-{$mode objfpc}{$H+}
-
 {$define ART_ACCLERATOR_ENABLE}
 
 interface
@@ -164,7 +162,7 @@ procedure HAL_Delay(Delay: longword);
     while (HAL_GetTick-tickstart) < Delay do;
   end;
 
-procedure Systick_Interrupt; [public, alias: 'SysTick_interrupt'];
+procedure Systick_Interrupt; [public, alias: 'SysTick_Interrupt'];
   begin
     inc(uwTick);
   end;
