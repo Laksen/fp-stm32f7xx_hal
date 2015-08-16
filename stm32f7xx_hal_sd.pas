@@ -44,6 +44,8 @@ unit stm32f7xx_hal_sd;
 
 interface
 
+{$mode objfpc}
+
 uses
   stm32f7xx_hal,
   stm32f7xx_defs,
@@ -400,8 +402,8 @@ procedure __HAL_SD_SDMMC_CLEAR_IT(var __HANDLE__: SD_HandleTypeDef; __INTERRUPT_
 
 function HAL_SD_Init(var hsd: SD_HandleTypeDef; var SDCardInfo: HAL_SD_CardInfoTypedef): HAL_SD_ErrorTypedef;
 function HAL_SD_DeInit(var hsd: SD_HandleTypeDef): HAL_StatusTypeDef;
-procedure HAL_SD_MspInit(var hsd: SD_HandleTypeDef);
-procedure HAL_SD_MspDeInit(var hsd: SD_HandleTypeDef);
+procedure HAL_SD_MspInit(var hsd: SD_HandleTypeDef); external name 'HAL_SD_MspInit';
+procedure HAL_SD_MspDeInit(var hsd: SD_HandleTypeDef); external name 'HAL_SD_MspDeInit';
 
 (* Blocking mode: Polling  *)
 function HAL_SD_ReadBlocks(var hsd: SD_HandleTypeDef; var pReadBuffer; ReadAddr: qword; BlockSize, NumberOfBlocks: longword): HAL_SD_ErrorTypedef;
@@ -736,6 +738,8 @@ var
   tmp: boolean;
   errorstate: HAL_SD_ErrorTypedef;
 begin
+  errorstate:=SD_OK;
+
   timeout := SDMMC_CMD0TIMEOUT;
 
   tmp := __HAL_SD_SDMMC_GET_FLAG(hsd, SDMMC_FLAG_CMDSENT);
@@ -763,6 +767,8 @@ var
   errorstate: HAL_SD_ErrorTypedef;
   response_r1: longword;
 begin
+  errorstate:=SD_OK;
+
   while (not __HAL_SD_SDMMC_GET_FLAG(hsd, SDMMC_FLAG_CCRCFAIL or SDMMC_FLAG_CMDREND or SDMMC_FLAG_CTIMEOUT)) do
   begin
   end;
@@ -867,6 +873,8 @@ var
   errorstate: HAL_SD_ErrorTypedef;
   timeout: integer;
 begin
+  errorstate:=SD_OK;
+
   timeout := SDMMC_CMD0TIMEOUT;
 
   tmp := __HAL_SD_SDMMC_GET_FLAG(hsd, SDMMC_FLAG_CCRCFAIL or SDMMC_FLAG_CMDREND or SDMMC_FLAG_CTIMEOUT);
@@ -907,6 +915,8 @@ function SD_CmdResp3Error(var hsd: SD_HandleTypeDef): HAL_SD_ErrorTypedef;
 var
   errorstate: HAL_SD_ErrorTypedef;
 begin
+  errorstate:=SD_OK;
+
   while (not __HAL_SD_SDMMC_GET_FLAG(hsd, SDMMC_FLAG_CCRCFAIL or SDMMC_FLAG_CMDREND or SDMMC_FLAG_CTIMEOUT)) do ;
 
   if (__HAL_SD_SDMMC_GET_FLAG(hsd, SDMMC_FLAG_CTIMEOUT)) then
@@ -928,6 +938,8 @@ function SD_CmdResp2Error(var hsd: SD_HandleTypeDef): HAL_SD_ErrorTypedef;
 var
   errorstate: HAL_SD_ErrorTypedef;
 begin
+  errorstate:=SD_OK;
+
   while (not __HAL_SD_SDMMC_GET_FLAG(hsd, SDMMC_FLAG_CCRCFAIL or SDMMC_FLAG_CMDREND or SDMMC_FLAG_CTIMEOUT)) do ;
 
   if (__HAL_SD_SDMMC_GET_FLAG(hsd, SDMMC_FLAG_CTIMEOUT)) then
@@ -958,6 +970,8 @@ var
   errorstate: HAL_SD_ErrorTypedef;
   response_r1: longword;
 begin
+  errorstate:=SD_OK;
+
   while (not __HAL_SD_SDMMC_GET_FLAG(hsd, SDMMC_FLAG_CCRCFAIL or SDMMC_FLAG_CMDREND or SDMMC_FLAG_CTIMEOUT)) do ;
 
   if (__HAL_SD_SDMMC_GET_FLAG(hsd, SDMMC_FLAG_CTIMEOUT)) then
@@ -1017,6 +1031,8 @@ var
   errorstate: HAL_SD_ErrorTypedef;
   sd_rca: word;
 begin
+  errorstate:=SD_OK;
+
   if (SDMMC_GetPowerState(hsd.Instance^) = 0) (* Power off *) then
   begin
     errorstate := SD_REQUEST_NOT_APPLICABLE;
@@ -1309,6 +1325,8 @@ var
   sdmmc_cmdinitstructure: SDMMC_CmdInitTypeDef;
   responseR1: longword;
 begin
+  errorstate:=SD_OK;
+
   sdmmc_cmdinitstructure.Argument := (hsd.RCA shl 16);
   sdmmc_cmdinitstructure.CmdIndex := SD_CMD_SEND_STATUS;
   sdmmc_cmdinitstructure.Response := SDMMC_RESPONSE_SHORT;
@@ -1767,14 +1785,14 @@ begin
   exit(HAL_OK);
 end;
 
-procedure HAL_SD_MspInit(var hsd: SD_HandleTypeDef);
-begin
-
+procedure HAL_SD_MspInit_stub(var hsd: SD_HandleTypeDef); assembler; nostackframe; public name 'HAL_SD_MspInit';
+asm
+  .weak HAL_SD_MspInit
 end;
 
-procedure HAL_SD_MspDeInit(var hsd: SD_HandleTypeDef);
-begin
-
+procedure HAL_SD_MspDeInit_stub(var hsd: SD_HandleTypeDef); assembler; nostackframe; public name 'HAL_SD_MspDeInit';
+asm
+  .weak HAL_SD_MspDeInit
 end;
 
 function HAL_SD_ReadBlocks(var hsd: SD_HandleTypeDef; var pReadBuffer; ReadAddr: qword; BlockSize, NumberOfBlocks: longword): HAL_SD_ErrorTypedef;
@@ -2534,6 +2552,8 @@ var
   tmp3: HAL_SD_ErrorTypedef;
   errorstate: HAL_SD_ErrorTypedef;
 begin
+  errorstate:=SD_OK;
+
   (* Wait for DMA/SD transfer end or SD error variables to be in SD handle *)
   tmp1 := hsd.DmaTransferCplt;
   tmp2 := hsd.SdTransferCplt;
@@ -2589,6 +2609,8 @@ var
   tmp3: HAL_SD_ErrorTypedef;
   errorstate: HAL_SD_ErrorTypedef;
 begin
+  errorstate:=SD_OK;
+
   (* Wait for DMA/SD transfer end or SD error variables to be in SD handle *)
   tmp1 := hsd.DmaTransferCplt;
   tmp2 := hsd.SdTransferCplt;
@@ -2638,6 +2660,8 @@ var
   tmp: longword;
   errorstate: HAL_SD_ErrorTypedef;
 begin
+  errorstate:=SD_OK;
+
   pCardInfo.CardType := (hsd.CardType);
   pCardInfo.RCA := (hsd.RCA);
 
@@ -2843,6 +2867,8 @@ var
   errorstate: HAL_SD_ErrorTypedef;
   tmpinit: SDMMC_InitTypeDef;
 begin
+  errorstate:=SD_OK;
+
   (* MMC Card does not support this feature *)
   if (hsd.CardType = MULTIMEDIA_CARD) then
   begin
